@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+
+class Google2FAMiddleware
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  Closure(Request): (Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+	if (!Auth::check()) {
+            return $next($request);
+        }
+
+	$user = auth()->user();
+	/**
+	if (!$request->session()->has('2fa_verified')) {
+        	return redirect()->route('2fa.index');
+    	}
+	*/
+	if ($user->has_2fa == 0) {
+            if ($request->is('2fa/setup*') || $request->is('2fa/cancel*')) {
+                return $next($request);
+            }
+		Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('welcome');
+        }
+
+	if (!auth()->check()) {
+        	return $next($request);
+    	}
+
+	if (!$user) {
+            return $next($request);
+        }
+
+	if (empty($user->google2fa_secret)) {
+            if ($request->is('2fa/setup*')) {
+                return $next($request);
+            }
+            return redirect()->route('2fa.setup');
+        }
+	
+	$authenticator = app(\PragmaRX\Google2FALaravel\Support\Authenticator::class)->boot($request);
+
+    	if ($authenticator->isAuthenticated()) {
+        	return $next($request);
+    	}
+
+    	if ($request->is('2fa/verify*')) {
+        	return $next($request);
+    	}
+
+    if (auth()->user()->google2fa_secret) {
+        if (!session()->has('google2fa_valid')) {
+            return redirect()->route('2fa.verify');
+        }
+    }
+
+    return redirect()->route('2fa.verify');    }
+
+private function redirectByRole($user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+        return redirect()->route('products.etalase');
+    }
+}

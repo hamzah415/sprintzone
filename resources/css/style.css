@@ -1,0 +1,108 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: #f3f3f3;
+    padding: 10px 40px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Layout Baris Atas */
+.top-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Search Bar */
+.search-container {
+    flex-grow: 0.5;
+    position: relative;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 35px 8px 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.search-container i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+/* Bagian Kanan (Ikon + Login) */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Jarak antara grup ikon dan login */
+}
+
+.icon-group {
+    display: flex;
+    gap: 20px;
+}
+
+.icon-item {
+    position: relative;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: black;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+}
+
+.login-menu {
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Layout Baris Bawah (Navigasi) */
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin-top: 5px;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #666;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.main-nav li.active a {
+    color: #ff5722; /* Warna orange seperti di gambar */
+    border-bottom: 2px solid #ff5722;
+    padding-bottom: 5px;
+}
