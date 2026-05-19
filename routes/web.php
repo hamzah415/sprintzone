@@ -18,6 +18,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -230,6 +231,8 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
 
         // Products
         Route::resource('products', ProductController::class)->except(['show']);
+
+        Route::resource('variants', ProductVariantController::class);
 
         // Panel Admin
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
