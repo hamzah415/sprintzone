@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    //deskripsi produk
+    
     <style>
         .description {
             background: #fff;
