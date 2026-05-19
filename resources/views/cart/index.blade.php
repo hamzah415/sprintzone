@@ -3,7 +3,6 @@
 @section('title', 'Shopping Cart')
 
 @section('content')
-
     <div class="max-w-5xl mx-auto px-4 py-10">
 
         <h1 class="text-4xl font-black italic uppercase mb-10">
@@ -35,6 +34,38 @@
                                     {{ $item->product->name }}
                                 </h2>
 
+                                {{-- Warna & Ukuran --}}
+                                <div class="flex items-center gap-4 mt-2 text-sm">
+
+                                    {{-- Warna --}}
+                                    @php $warna = $item->color ?? $item->product->color ?? null; @endphp
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-gray-500">Warna:</span>
+                                        @if ($warna)
+                                            <span class="w-5 h-5 rounded-full border border-gray-300"
+                                                style="background-color: {{ $warna }}"
+                                                title="{{ $warna }}"></span>
+                                            <span class="font-medium text-gray-700 uppercase">{{ $warna }}</span>
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Ukuran --}}
+                                    @php $ukuran = $item->size ?? $item->product->size ?? null; @endphp
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-gray-500">Ukuran:</span>
+                                        @if ($ukuran)
+                                            <span
+                                                class="px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-xs font-medium">
+                                                {{ $ukuran }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
+                                    </div>
+
+                                </div>
                                 <div class="flex items-center gap-3 mt-3">
 
                                     {{-- MINUS --}}
