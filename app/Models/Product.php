@@ -3,47 +3,64 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'name',
+        'category_id',
+        'brand_id',
+        'company_id',
         'sku',
         'description',
-
+        'image',
+        'status',
+        'stock',
         'price',
         'discount_price',
-
-        'stock',
         'weight',
-
-        'company_id',
-        'brand_id',
-        'category_id',
-
-        'image',
-
-        'status',
+        'created_by',
+        'updated_by',
     ];
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
+    protected $casts = [
+        'price' => 'integer',
+        'discount_price' => 'integer',
+        'stock' => 'integer',
+    ];
 
-    public function brand()
-    {
-        return $this->belongsTo(Brand::class);
-    }
-
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    // RELATION PRODUCT VARIANTS
-    public function variants()
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

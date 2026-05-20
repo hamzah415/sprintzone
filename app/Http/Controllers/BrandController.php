@@ -16,11 +16,6 @@ class BrandController extends Controller
     {
         $brands = Brand::latest()->get();
         return view('brands.index', compact('brands'));
-
-        $brands = Brand::withTrashed()
-            ->with(['images', 'creator', 'updater'])
-            ->latest()
-            ->get();
     }
 
     public function create()

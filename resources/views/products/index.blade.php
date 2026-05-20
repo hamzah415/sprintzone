@@ -287,9 +287,10 @@
                 <button onclick="closeProductModal()"
                     class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
             </div>
-            <form id="productForm" method="POST" enctype="multipart/form-data" class="p-6">
+            <form id="productForm" method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data"
+                class="p-6">
                 @csrf
-                <input type="hidden" name="_method" id="formMethod" value="POST">
+                <input type="hidden" id="formMethod" value="POST">
 
                 <div class="mb-5">
                     <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Product
@@ -305,6 +306,9 @@
                         <select name="category_id" id="productCategory"
                             class="w-full border-gray-200 border-2 text-sm font-bold p-3">
                             <option value="">Select</option>
+                            @foreach (\App\Models\Category::all() as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div>
@@ -313,6 +317,9 @@
                         <select name="brand_id" id="productBrand"
                             class="w-full border-gray-200 border-2 text-sm font-bold p-3">
                             <option value="">Select</option>
+                            @foreach (\App\Models\Brand::all() as $brand)
+                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -431,26 +438,34 @@
             document.getElementById('arrow-' + id).classList.toggle('rotate-180');
         }
 
-        // Product Modal
+        // Product Modal - yang sudah diperbaiki
         function openProductModal(mode, data = null) {
             const modal = document.getElementById('productModal');
             const form = document.getElementById('productForm');
             const title = document.getElementById('modalTitle');
+            const methodField = document.getElementById('formMethod');
 
             if (mode === 'create') {
                 title.textContent = 'New Product';
                 form.action = '{{ route('products.store') }}';
-                document.getElementById('formMethod').value = 'POST';
+                methodField.value = 'POST';
+
+                // Reset semua field
                 document.getElementById('productName').value = '';
-                document.getElementById('productDesc').value = '';
+                document.getElementById('productCategory').value = '';
+                document.getElementById('productBrand').value = '';
                 document.getElementById('productStatus').value = 'active';
+                document.getElementById('productDesc').value = '';
             } else {
                 title.textContent = 'Edit Product';
                 form.action = '/products/' + data.id;
-                document.getElementById('formMethod').value = 'PUT';
+                methodField.value = 'PUT';
+
                 document.getElementById('productName').value = data.name;
-                document.getElementById('productDesc').value = data.description || '';
+                document.getElementById('productCategory').value = data.category_id || '';
+                document.getElementById('productBrand').value = data.brand_id || '';
                 document.getElementById('productStatus').value = data.status;
+                document.getElementById('productDesc').value = data.description || '';
             }
 
             modal.classList.remove('hidden');

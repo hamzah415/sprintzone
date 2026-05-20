@@ -81,7 +81,7 @@
                                             </button>
                                             {{-- DELETE --}}
                                             <button type="button"
-                                                onclick="openDeleteModal({{ $brand->id }}, '{{ $brand->name }}')"
+                                                onclick="openDeleteModal('{{ route('brands.destroy', $brand->id) }}', 'Brand <b>{{ $brand->name }}</b> will be deleted.')"
                                                 class="w-9 h-9 flex items-center justify-center rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
