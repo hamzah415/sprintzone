@@ -243,6 +243,13 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
             Route::resource('users', UserController::class)->only(['index', 'store', 'update']);
         });
 
+        Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])
+            ->name('companies.destroy');
+
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::resource('users', UserController::class);
+        });
+
         Route::get('/purchase-history', [PurchaseController::class, 'index'])->name('purchase.history');
         Route::get('/purchase-history/{order}', [PurchaseController::class, 'show'])->name('purchase.show');
         Route::put('/purchase-history/{order}/status', [PurchaseController::class, 'updateStatus'])->name('purchase.status');

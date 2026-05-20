@@ -41,11 +41,11 @@
     </style>
 
     <div class="container-fluid py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-8">
             <h2 class="text-1xl md:text-2xl font-black italic uppercase tracking-tighter">COMPANY <span
                     class="text-orange-500">MANAGEMENT</span></h2>
 
-            <button class="btn btn-sprint px-4 shadow-sm" data-toggle="modal" data-target="#modalCreateCompany">
+            <button class="btn btn-sprint px-4 shadow-sm" onclick="openModal('add')">
                 <i class="fas fa-plus-circle me-2"></i> NEW COMPANY
             </button>
         </div>
@@ -55,46 +55,67 @@
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
-                            <tr>
-                                <th class="pl-4">Action</th>
-                                <th class="ps-4">ID</th>
-                                <th>Company Name</th>
-                                <th>Email Address</th>
-                                <th>Industry</th>
+                            <tr class="bg-gray-50 border-b border-gray-100">
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Action</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Company Name</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Email</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Industry</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Created</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Updated</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-gray-50">
                             @forelse($companies as $company)
-                                <tr>
-                                    <td class="pe-4">
-                                        <a href="#" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold"
-                                            style="font-size: 12px;">
-                                            <i class="fas fa-pencil-alt me-1"></i> Edit
-                                        </a>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            {{-- EDIT --}}
+                                            <button onclick='openModal("edit", @json($company))' class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </button>
+                                            {{-- DELETE --}}
+                                            <button type="button" onclick="openDeleteModal('{{ route('companies.destroy', $company->id) }}', 'Company <b>{{ $company->name }}</b> will be deleted.')" class="w-9 h-9 flex items-center justify-center rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </td>
-                                    <td class="ps-4 fw-bold text-dark">{{ $company->id }}</td>
-                                    <td>
-                                        <div class="fw-bold text-dark text-uppercase" style="font-size: 15px;">
-                                            {{ $company->name }}</div>
-                                        <small class="text-muted"><i
-                                                class="fas fa-link me-1"></i>{{ $company->website ?? 'No Website' }}</small>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-gray-800 uppercase text-sm">{{ $company->name }}</span>
+                                            <span class="text-xs text-gray-400">{{ $company->website ?? 'No Website' }}</span>
+                                        </div>
                                     </td>
-                                    <td class="text-muted">{{ $company->email }}</td>
-                                    <td>
-                                        <span class="badge bg-dark text-white px-3 py-2 text-uppercase"
-                                            style="font-size: 10px; border-radius: 4px;">
-
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        {{ $company->email }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 text-[10px] font-black uppercase rounded bg-gray-800 text-white tracking-tighter">
                                             {{ $company->industry ?? 'General' }}
-
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-gray-700">{{ $company->creator->name ?? '-' }}</span>
+                                            <span class="text-xs text-gray-400">{{ $company->created_at->format('d M Y') }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-gray-700">{{ $company->updater->name ?? '-' }}</span>
+                                            <span class="text-xs text-gray-400">{{ $company->updated_at ? $company->updated_at->format('d M Y') : '-' }}</span>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-5">
-                                        <div class="text-muted opacity-50">
-                                            <i class="fas fa-building fa-3x mb-3"></i>
-                                            <p class="mb-0 fw-bold">There is no company data yet.</p>
+                                    <td colspan="6" class="py-20 text-center">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-building text-gray-300 text-5xl mb-4"></i>
+                                            <p class="text-gray-400 font-medium text-sm tracking-wide">There is no company data yet.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -106,64 +127,86 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalCreateCompany" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
-                <div class="modal-header modal-header-sprint py-3 px-4">
-                    <h5 class="modal-title fw-bold">
-                        <i class="fas fa-plus-square me-2"></i> CREATE NEW COMPANY
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    {{-- MODAL BOX --}}
+    <div id="companyModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-sm shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-white font-black italic uppercase tracking-widest text-lg">Add New Company</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+
+            <form id="companyForm" action="{{ route('companies.store') }}" method="POST" class="p-6">
+                @csrf
+                <div id="methodField"></div>
+
+                <div class="mb-5">
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Company Name</label>
+                    <input type="text" name="name" id="company_name" required class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
                 </div>
 
-                <form action="{{ route('companies.store') }}" method="POST">
-                    @csrf
-                    <div class="modal-body p-4">
-                        <div class="row g-4">
-                            <div class="col-md-12">
-                                <label class="form-label form-label-custom">Company Name</label>
-                                <input type="text" name="name" class="form-control form-control-sprint"
-                                    placeholder="Enter company name" required>
-                            </div>
+                <div class="mb-5">
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Email Address</label>
+                    <input type="email" name="email" id="company_email" required class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
+                </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label form-label-custom">Email Address</label>
-                                <input type="email" name="email" class="form-control form-control-sprint"
-                                    placeholder="company@mail.com" required>
-                            </div>
+                <div class="mb-5">
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Industry</label>
+                    <select name="industry" id="company_industry" class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
+                        <option value="">Select Industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Education">Education</option>
+                        <option value="Healthcare">Healthcare</option>
+                    </select>
+                </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label form-label-custom">Industry</label>
-                                <select name="industry" class="form-select form-control-sprint">
-                                    <option value="">Select Industry</option>
-                                    <option value="Technology">Technology</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Education">Education</option>
-                                    <option value="Healthcare">Healthcare</option>
-                                </select>
-                            </div>
+                <div class="mb-5">
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Website</label>
+                    <input type="url" name="website" id="company_website" class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
+                </div>
 
-                            <div class="col-md-12">
-                                <label class="form-label form-label-custom">Website</label>
-                                <input type="url" name="website" class="form-control form-control-sprint"
-                                    placeholder="https://example.com">
-                            </div>
+                <div class="mb-5">
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Address</label>
+                    <textarea name="address" id="company_address" rows="3" class="w-full border-gray-200 border-2 rounded-sm text-sm font-medium p-3"></textarea>
+                </div>
 
-                            <div class="col-md-12">
-                                <label class="form-label form-label-custom">Address</label>
-                                <textarea name="address" class="form-control form-control-sprint" rows="3" placeholder="Jl. Raya Sprint No. 1..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light border-0 py-3 px-4">
-                        <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal"
-                            style="border-radius: 8px;">CLOSE</button>
-                        <button type="submit" class="btn btn-orange px-4 shadow-sm" style="border-radius: 8px;">
-                            <i class="fas fa-save me-1"></i> SAVE COMPANY
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="flex justify-end gap-3 mt-8">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2 text-xs font-black uppercase tracking-widest text-gray-400">Cancel</button>
+                    <button type="submit" class="px-8 py-2 bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-sm hover:bg-orange-700 shadow-md">Save Data</button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <script>
+        function openModal(mode, company = null) {
+            const modal = document.getElementById('companyModal');
+            const form = document.getElementById('companyForm');
+            const methodField = document.getElementById('methodField');
+            const title = document.getElementById('modalTitle');
+
+            modal.classList.remove('hidden');
+
+            if (mode === 'edit') {
+                title.innerText = 'Edit Company Details';
+                form.action = `/companies/${company.id}`;
+                methodField.innerHTML = `@method('PUT')`;
+                document.getElementById('company_name').value = company.name;
+                document.getElementById('company_email').value = company.email;
+                document.getElementById('company_industry').value = company.industry;
+                document.getElementById('company_website').value = company.website;
+                document.getElementById('company_address').value = company.address;
+            } else {
+                title.innerText = 'Add New Company';
+                form.action = "{{ route('companies.store') }}";
+                methodField.innerHTML = '';
+                form.reset();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('companyModal').classList.add('hidden');
+        }
+    </script>
+    <x-delete-modal />
 @endsection

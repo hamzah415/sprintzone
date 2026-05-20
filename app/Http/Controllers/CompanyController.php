@@ -51,9 +51,19 @@ class CompanyController extends Controller
         return redirect()->back()->with('success', 'Perusahaan berhasil didaftarkan!');
     }
 
-    
+
     public function show(Company $company): View
     {
         return view('companies.show', compact('company'));
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }
