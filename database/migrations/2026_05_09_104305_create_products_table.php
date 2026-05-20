@@ -12,31 +12,30 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('your_table_name', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
+
             $table->id();
 
             $table->string('name');
+
             $table->text('description')->nullable();
 
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive'])
+                ->default('active');
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('deleted_by')->nullable();
+            $table->foreignId('company_id')
+                ->nullable()
+                ->constrained();
 
-            $table->tinyInteger('is_deleted')->default(0);
-            $table->timestamp('deleted_date')->nullable();
+            $table->foreignId('brand_id')
+                ->nullable()
+                ->constrained();
 
-            $table->unsignedBigInteger('company_id')->nullable();
-            $table->unsignedBigInteger('brand_id')->nullable();
-            $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreignId('category_id')
+                ->nullable()
+                ->constrained();
 
             $table->timestamps();
-
-            // Optional Foreign Keys
-            // $table->foreign('company_id')->references('id')->on('companies');
-            // $table->foreign('brand_id')->references('id')->on('brands');
-            // $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 
