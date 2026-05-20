@@ -3,19 +3,21 @@
 @section('title', 'Power Your Steps')
 
 @section('styles')
-    /* Animasi Sepatu Spesifik Home */
     .shoe-shadow {
-    filter: drop-shadow(0 35px 35px rgba(0,0,0,0.25));
-    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: drop-shadow(0 35px 35px rgba(0,0,0,0.25));
+        transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .shoe-container:hover .shoe-image {
-    transform: rotate(-10deg) scale(1.6);
+        transform: rotate(-10deg) scale(1.6);
+    }
+    .variant-btn.active {
+        background: black;
+        color: white;
     }
 @endsection
 
 @section('content')
-    <main
-        class="relative flex-1 flex flex-col md:flex-row items-center px-6 md:px-20 py-10 md:py-0 overflow-hidden bg-white">
+    <main class="relative flex-1 flex flex-col md:flex-row items-center px-6 md:px-20 py-10 md:py-0 overflow-hidden bg-white">
         <div class="z-20 w-full md:w-1/2 text-center md:text-left order-1">
             <h2 class="text-5xl md:text-[7.5rem] font-black italic uppercase leading-[0.85] mb-6 tracking-tighter">
                 Power Your <br><span class="text-orange-500 md:text-black">Steps</span>
@@ -28,64 +30,40 @@
                 Buy now
             </button>
         </div>
-
-        <div
-            class="shoe-container relative w-full md:w-1/2 h-[350px] md:h-full flex justify-center items-center mt-12 md:mt-0 order-2">
+        <div class="shoe-container relative w-full md:w-1/2 h-[350px] md:h-full flex justify-center items-center mt-12 md:mt-0 order-2">
             <div class="absolute w-72 h-72 bg-orange-100 rounded-full blur-[110px] opacity-40 animate-pulse"></div>
             <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070"
                 class="shoe-image shoe-shadow relative z-10 w-full max-w-md md:max-w-4xl transform rotate-[-15deg] md:rotate-[-20deg] scale-110 md:scale-150 object-contain">
         </div>
     </main>
 
-
-
     {{-- HOME PRODUCTS --}}
     <div class="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
-
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-
             <div>
-
                 <div class="mb-4">
-
                     <h2 class="text-3xl md:text-4xl font-black italic uppercase tracking-tighter">
-
-                        Trending
-                        <span class="text-orange-500">
-                            Now
-                        </span>
-
+                        Trending <span class="text-orange-500">Now</span>
                     </h2>
-
-                    <p class="text-gray-500 font-medium">
-                        No limits. Just your best performance ever.
-                    </p>
-
+                    <p class="text-gray-500 font-medium">No limits. Just your best performance ever.</p>
                 </div>
-
             </div>
-
         </div>
 
         {{-- PRODUCT GRID --}}
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-
             @forelse($products ?? [] as $product)
-                <div class="group">
+                <div class="group product-item" data-product-id="{{ $product->id }}">
 
                     <a href="{{ route('products.show', $product->id) }}" class="block no-underline hover:no-underline">
-
-                        {{-- IMAGE --}}
+                        {{-- IMAGE (dari variant) --}}
                         <div class="relative aspect-square overflow-hidden rounded-2xl bg-gray-100 mb-4">
-
                             @php
-                                // Cek gambar: produk dulu, kalo ga ada ambil dari variant
-                                $productImage = $product->image;
-                                if (!$productImage && $product->variants->isNotEmpty()) {
+                                // Cari gambar dari variant
+                                $productImage = null;
+                                if ($product->variants->isNotEmpty()) {
                                     $variantWithImage = $product->variants->firstWhere(fn($v) => !empty($v['image']));
-                                    if ($variantWithImage) {
-                                        $productImage = $variantWithImage['image'];
-                                    }
+                                    if ($variantWithImage) $productImage = $variantWithImage['image'];
                                 }
                             @endphp
 
@@ -93,97 +71,67 @@
                                 <img src="{{ asset('storage/' . $productImage) }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                                    No Image
-                                </div>
+                                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
                             @endif
 
-                            {{-- STATUS --}}
-                            <div class="absolute top-3 left-3">
-                                @if ($product->status == 'active')
-                                    <span
-                                        class="bg-black text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">New</span>
-                                @else
-                                    <span
-                                        class="bg-gray-500 text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">Inactive</span>
-                                @endif
-                            </div>
-
-                            {{-- DISCOUNT --}}
-                            @php
-                                // Cari harga dari produk ATAU variant termurah
-                                $mainPrice = $product->price ?? 0;
-                                $mainDiscount = $product->discount_price ?? null;
-
-                                // Jika produk price 0 atau null, ambil dari variant
-                                if (!$mainPrice && $product->variants->isNotEmpty()) {
-                                    $variantPrices = $product->variants->pluck('price')->filter();
-                                    $variantDiscounts = $product->variants->pluck('discount_price')->filter();
-
-                                    if ($variantPrices->isNotEmpty()) {
-                                        $mainPrice = $variantPrices->min();
-                                    }
-                                    if ($variantDiscounts->isNotEmpty()) {
-                                        $mainDiscount = $variantDiscounts->min();
-                                    }
-                                }
-
-                                $hasDiscount = $mainDiscount && $mainDiscount < $mainPrice;
-                            @endphp
-
-                            @if ($hasDiscount)
-                                <div class="absolute top-3 right-3">
-                                    <span
-                                        class="bg-red-600 text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">Sale</span>
+                            @if ($product->status == 'active')
+                                <div class="absolute top-3 left-3">
+                                    <span class="bg-black text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">New</span>
                                 </div>
                             @endif
                         </div>
 
-                        {{-- PRODUCT INFO --}}
+                        {{-- INFO (harga dari variant) --}}
                         <div class="space-y-1">
-                            {{-- BRAND --}}
                             <div class="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
                                 {{ $product->brand->name ?? 'No Brand' }}
                             </div>
-
-                            {{-- PRODUCT NAME --}}
                             <h3 class="font-bold text-sm text-gray-800 leading-tight line-clamp-2">
                                 {{ $product->name }}
                             </h3>
+                            @php
+                                // Cari harga dari variant termurah
+                                $minPrice = 0;
+                                $minDiscount = null;
+                                if ($product->variants->isNotEmpty()) {
+                                    $variantPrices = $product->variants->pluck('price')->filter();
+                                    $variantDiscounts = $product->variants->pluck('discount_price')->filter();
+                                    if ($variantPrices->isNotEmpty()) $minPrice = $variantPrices->min();
+                                    if ($variantDiscounts->isNotEmpty()) $minDiscount = $variantDiscounts->min();
+                                }
+                                $hasDiscount = $minDiscount && $minDiscount < $minPrice;
+                            @endphp
 
-                            {{-- PRICE --}}
                             @if ($hasDiscount)
                                 <div class="flex items-center gap-2">
                                     <div class="text-lg font-black italic tracking-tighter text-gray-900">
-                                        Rp {{ number_format($mainDiscount, 0, ',', '.') }}
+                                        Rp {{ number_format($minDiscount, 0, ',', '.') }}
                                     </div>
                                     <div class="text-[10px] text-gray-400 line-through">
-                                        Rp {{ number_format($mainPrice, 0, ',', '.') }}
+                                        Rp {{ number_format($minPrice, 0, ',', '.') }}
                                     </div>
                                 </div>
                             @else
                                 <div class="text-lg font-black italic tracking-tighter text-gray-900">
-                                    Rp {{ number_format($mainPrice, 0, ',', '.') }}
+                                    Rp {{ number_format($minPrice, 0, ',', '.') }}
                                 </div>
                             @endif
                         </div>
-
-                        {{-- BUTTON --}}
-                        @auth
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                                    Add to Cart
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('login') }}"
-                                class="block w-full mt-4 text-center hover:no-underline bg-gray-100 hover:bg-orange-600 hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                                Add to Cart
-                            </a>
-                        @endauth
                     </a>
+
+                    {{-- BUTTON --}}
+                    @auth
+                        <button type="button" 
+                            onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
+                            class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                            Add to Cart
+                        </button>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="block w-full mt-4 text-center hover:no-underline bg-gray-100 hover:bg-orange-600 hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                            Add to Cart
+                        </a>
+                    @endauth
                 </div>
             @empty
                 <div class="col-span-full text-center py-20">
@@ -193,8 +141,205 @@
                     </div>
                 </div>
             @endforelse
-
         </div>
-
     </div>
+
+    {{-- VARIANT MODAL --}}
+    <div id="variantModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
+            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center">
+                <div>
+                    <h3 class="text-white font-black italic uppercase">Pilih Variant</h3>
+                    <p class="text-gray-400 text-xs" id="modalProductName"></p>
+                </div>
+                <button onclick="closeVariantModal()" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <form id="variantForm" method="POST" class="p-6">
+                @csrf
+                <input type="hidden" name="variant_id" id="selectedVariantId">
+                <input type="hidden" name="qty" id="variantQty" value="1">
+
+                <div class="mb-4">
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih Warna</label>
+                    <div class="flex flex-wrap gap-2" id="colorOptions"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih Ukuran</label>
+                    <div class="flex flex-wrap gap-2" id="sizeOptions"></div>
+                </div>
+
+                <div id="variantInfo" class="hidden bg-gray-50 rounded-xl p-4 mb-4">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Stock:</span>
+                        <span class="font-bold" id="modalStock">-</span>
+                    </div>
+                    <div class="flex justify-between text-sm mt-2">
+                        <span class="text-gray-500">Harga:</span>
+                        <span class="font-bold text-orange-600" id="modalPrice">-</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="text-xs font-black text-gray-500 uppercase tracking-widest">Jumlah</label>
+                    <div class="flex items-center border rounded-lg overflow-hidden">
+                        <button type="button" onclick="modalDecreaseQty()" class="w-10 h-10 hover:bg-gray-100">-</button>
+                        <input type="number" id="modalQtyInput" value="1" readonly class="w-12 text-center border-0 outline-none">
+                        <button type="button" onclick="modalIncreaseQty()" class="w-10 h-10 hover:bg-gray-100">+</button>
+                    </div>
+                </div>
+
+                <button type="submit" id="addToCartBtn" disabled
+                    class="w-full bg-orange-600 text-white py-3 rounded-xl font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed">
+                    + Add To Cart
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {{-- SCRIPT --}}
+    <script>
+        // Simpan semua variants
+        const allProductVariants = {};
+
+        @foreach($products ?? [] as $product)
+            allProductVariants[{{ $product->id }}] = @json($product->variants);
+        @endforeach
+
+        let currentVariants = [];
+        let selectedColor = null;
+        let selectedSize = null;
+        let selectedVariant = null;
+        let currentProductId = null;
+
+        function handleAddToCart(productId, productName) {
+            currentProductId = productId;
+            currentVariants = allProductVariants[productId] || [];
+
+            if (currentVariants.length === 0) {
+                directAddToCart(productId);
+                return;
+            }
+
+            openVariantModal(productName);
+        }
+
+        function openVariantModal(productName) {
+            document.getElementById('modalProductName').innerText = productName;
+            document.getElementById('variantForm').action = '/cart/' + currentProductId;
+
+            selectedColor = null;
+            selectedSize = null;
+            selectedVariant = null;
+
+            // Render colors
+            const uniqueColors = [...new Set(currentVariants.map(v => v.color))];
+            document.getElementById('colorOptions').innerHTML = uniqueColors.map(color => 
+                `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-color="${color}">${color}</button>`
+            ).join('');
+
+            // Render sizes
+            const uniqueSizes = [...new Set(currentVariants.map(v => v.size))];
+            document.getElementById('sizeOptions').innerHTML = uniqueSizes.map(size => 
+                `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-size="${size}">${size}</button>`
+            ).join('');
+
+            document.getElementById('variantInfo').classList.add('hidden');
+            document.getElementById('addToCartBtn').disabled = true;
+            document.getElementById('modalQtyInput').value = 1;
+            document.getElementById('variantModal').classList.remove('hidden');
+            document.getElementById('variantModal').classList.add('flex');
+
+            // Add events
+            document.querySelectorAll('#colorOptions .variant-btn').forEach(btn => {
+                btn.onclick = function() {
+                    document.querySelectorAll('#colorOptions .variant-btn').forEach(b => b.classList.remove('active', 'bg-black', 'text-white'));
+                    this.classList.add('active', 'bg-black', 'text-white');
+                    selectedColor = this.dataset.color;
+                    findModalVariant();
+                };
+            });
+
+            document.querySelectorAll('#sizeOptions .variant-btn').forEach(btn => {
+                btn.onclick = function() {
+                    document.querySelectorAll('#sizeOptions .variant-btn').forEach(b => b.classList.remove('active', 'bg-black', 'text-white'));
+                    this.classList.add('active', 'bg-black', 'text-white');
+                    selectedSize = this.dataset.size;
+                    findModalVariant();
+                };
+            });
+        }
+
+        function directAddToCart(productId) {
+            fetch('/cart/' + productId, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || 'Error');
+                }
+            })
+            .catch(error => {
+                window.location.href = '/cart/' + productId;
+            });
+        }
+
+        function findModalVariant() {
+            if (!selectedColor || !selectedSize) {
+                selectedVariant = null;
+                document.getElementById('variantInfo').classList.add('hidden');
+                document.getElementById('addToCartBtn').disabled = true;
+                document.getElementById('selectedVariantId').value = '';
+                return;
+            }
+
+            selectedVariant = currentVariants.find(v => v.color === selectedColor && v.size === selectedSize);
+
+            if (selectedVariant && selectedVariant.stock > 0) {
+                const hasDiscount = selectedVariant.discount_price && selectedVariant.discount_price < selectedVariant.price;
+                const price = hasDiscount ? selectedVariant.discount_price : selectedVariant.price;
+
+                document.getElementById('variantInfo').classList.remove('hidden');
+                document.getElementById('modalStock').innerText = selectedVariant.stock;
+                document.getElementById('modalPrice').innerText = 'Rp ' + Number(price).toLocaleString('id-ID');
+                document.getElementById('selectedVariantId').value = selectedVariant.id;
+                document.getElementById('modalQtyInput').max = selectedVariant.stock;
+                document.getElementById('addToCartBtn').disabled = false;
+            } else {
+                document.getElementById('variantInfo').classList.add('hidden');
+                document.getElementById('addToCartBtn').disabled = true;
+            }
+        }
+
+        function closeVariantModal() {
+            document.getElementById('variantModal').classList.add('hidden');
+            document.getElementById('variantModal').classList.remove('flex');
+        }
+
+        function modalIncreaseQty() {
+            const input = document.getElementById('modalQtyInput');
+            const max = parseInt(input.max) || 1;
+            if (parseInt(input.value) < max) {
+                input.value = parseInt(input.value) + 1;
+            }
+        }
+
+        function modalDecreaseQty() {
+            const input = document.getElementById('modalQtyInput');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeVariantModal();
+        });
+    </script>
 @endsection

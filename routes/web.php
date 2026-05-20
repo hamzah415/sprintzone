@@ -181,10 +181,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Cart (FIX: Hanya define sekali, tidak ada duplikasi)
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-    Route::post('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/increase/{product}', [CartController::class, 'increase'])->name('cart.increase');
-    Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])->name('cart.decrease');
+    // routes/web.php - Cart route
+    Route::post('/cart/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/{cartItem}/increase', [CartController::class, 'increase'])->name('cart.increase');
+    Route::post('/cart/{cartItem}/decrease', [CartController::class, 'decrease'])->name('cart.decrease');
+    Route::delete('/cart/{cartItem}/remove', [CartController::class, 'remove'])->name('cart.remove');
 
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');

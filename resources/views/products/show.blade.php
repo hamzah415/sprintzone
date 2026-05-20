@@ -304,12 +304,13 @@
                     {{-- BUTTON --}}
                     <div>
                         @auth
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                            <form action="{{ route('cart.add', $product->id) }}" method="POST" id="cartForm">
                                 @csrf
                                 <input type="hidden" name="qty" id="qtyHidden" value="1">
                                 <input type="hidden" name="variant_id" id="variantId">
-                                <button type="submit"
-                                    class="w-full bg-black hover:bg-orange-600 text-white py-4 rounded-2xl font-semibold transition">
+
+                                <button type="submit" id="addToCartBtn"
+                                    class="w-full bg-black hover:bg-orange-600 text-white py-4 rounded-2xl font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                                     + Add To Cart
                                 </button>
                             </form>
