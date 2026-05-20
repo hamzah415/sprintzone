@@ -30,13 +30,6 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        $lowStockProducts = Product::where('stock', '<=', 5)->count();
-
-        $lowStockList = Product::where('stock', '<=', 5)
-            ->latest()
-            ->take(5)
-            ->get();
-
         $totalSuccessOrders = Order::where('status', 'success')
             ->count();
 
@@ -48,8 +41,6 @@ class AdminController extends Controller
             'totalBrands',
             'totalCategories',
             'totalAdmins',
-            'lowStockProducts',
-            'lowStockList',
             'recentProducts',
             'recentOrders',
             'totalRevenue',
