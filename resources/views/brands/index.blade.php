@@ -2,7 +2,6 @@
 
 @section('content')
     <style>
-        /* Kostumisasi agar senada dengan SprintZone */
         .btn-sprint {
             background-color: #FF4500;
             color: white;
@@ -62,51 +61,34 @@
                                 <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Slug</th>
                                 <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Description
                                 </th>
-                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                    Created By
-                                </th>
-                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                    Created Date
-                                </th>
-                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                    Updated By
-                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Created</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Updated</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
-                            {{-- PERBAIKAN: Menggunakan @forelse bukan @foreach --}}
                             @forelse($brands as $brand)
                                 <tr class="hover:bg-gray-50 transition duration-150">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-
                                             {{-- EDIT --}}
                                             <button onclick='openModal("edit", @json($brand))'
                                                 class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
-
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                 </svg>
-
                                             </button>
-
                                             {{-- DELETE --}}
                                             <button type="button"
                                                 onclick="openDeleteModal({{ $brand->id }}, '{{ $brand->name }}')"
                                                 class="w-9 h-9 flex items-center justify-center rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition">
-
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
-
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" />
-
                                                 </svg>
-
                                             </button>
-
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
@@ -132,31 +114,34 @@
                                             {{ Str::limit($brand->description ?? 'NO DESCRIPTION', 30) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-bold text-gray-700">
-                                        {{ $brand->creator->name ?? '-' }}
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-sm font-bold text-gray-700">{{ $brand->creator->name ?? '-' }}</span>
+                                            <span
+                                                class="text-xs text-gray-400">{{ $brand->created_at->format('d M Y') }}</span>
+                                        </div>
                                     </td>
-
-                                    <td class="px-6 py-4 text-sm text-gray-500">
-                                        {{ $brand->created_at->format('d M Y') }}
-                                    </td>
-
-                                    <td class="px-6 py-4 text-sm font-bold text-gray-700">
-                                        {{ $brand->updater->name ?? '-' }}
-                                    </td>
-                                </tr>
-                            @empty
-                                {{-- PERBAIKAN: Bagian @empty akan dijalankan jika data kosong --}}
-                                <tr>
-                                    <td colspan="5" class="py-20 text-center">
-                                        <div class="flex flex-col items-center justify-center">
-                                            <i class="fas fa-building text-gray-300 text-5xl mb-4"></i>
-                                            <p class="text-gray-400 font-medium text-sm tracking-wide">
-                                                There is no brand data yet.
-                                            </p>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-sm font-bold text-gray-700">{{ $brand->updater->name ?? '-' }}</span>
+                                            <span
+                                                class="text-xs text-gray-400">{{ $brand->updated_at ? $brand->updated_at->format('d M Y') : '-' }}</span>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforelse {{-- PERBAIKAN: Penutup @forelse --}}
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="py-20 text-center">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-building text-gray-300 text-5xl mb-4"></i>
+                                            <p class="text-gray-400 font-medium text-sm tracking-wide">There is no brand
+                                                data yet.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -222,7 +207,6 @@
 
             if (mode === 'edit') {
                 title.innerText = 'Edit Brand Details';
-                // Pastikan URL disesuaikan jika project berada di subfolder (misal: /sprintzone/public/brands/)
                 form.action = `/brands/${brand.id}`;
                 methodField.innerHTML = `@method('PUT')`;
                 document.getElementById('brand_name').value = brand.name;

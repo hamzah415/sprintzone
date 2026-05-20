@@ -187,7 +187,8 @@
                                                         <th class="py-2 text-left">Price</th>
                                                         <th class="py-2 text-left">Disc</th>
                                                         <th class="py-2 text-left">Stock</th>
-                                                        <th class="py-2 text-left">Act</th>
+                                                        <th class="py-2 text-left">Created</th>
+                                                        <th class="py-2 text-left">Updated</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -213,16 +214,7 @@
                                                             </td>
                                                             <td class="py-2 font-bold text-green-600">{{ $variant->stock }}
                                                             </td>
-                                                            <td class="py-2">
-                                                                <div class="flex gap-1">
-                                                                    <button
-                                                                        onclick='openVariantEditModal(@json($variant))'
-                                                                        class="w-6 h-6 rounded border hover:bg-gray-100">✎</button>
-                                                                    <button
-                                                                        onclick="openDeleteModal('{{ route('variants.destroy', $variant->id) }}')"
-                                                                        class="w-6 h-6 rounded border border-red-200 text-red-500 hover:bg-red-50">×</button>
-                                                                </div>
-                                                            </td>
+                                                            
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
