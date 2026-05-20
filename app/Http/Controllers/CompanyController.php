@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -65,5 +66,15 @@ class CompanyController extends Controller
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function destroy($id)
+    {
+        $company = Company::findOrFail($id);
+
+        $company->delete();
+
+        return redirect()->route('companies.index')
+            ->with('success', 'Company deleted successfully');
     }
 }

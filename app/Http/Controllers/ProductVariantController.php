@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ProductVariantController extends Controller
 {
@@ -29,10 +30,15 @@ class ProductVariantController extends Controller
         $data = $request->except('image');
 
         /**
+         * Tambahkan created_by
+         */
+        $data['created_by'] = Auth::id();
+        $data['updated_by'] = Auth::id();
+
+        /**
          * Upload image
          */
         if ($request->hasFile('image')) {
-
             $data['image'] = $request->file('image')
                 ->store('variants', 'public');
         }
@@ -68,16 +74,19 @@ class ProductVariantController extends Controller
         $data = $request->except('image');
 
         /**
+         * Tambahkan updated_by
+         */
+        $data['updated_by'] = Auth::id();
+
+        /**
          * Upload new image
          */
         if ($request->hasFile('image')) {
-
             /**
              * Delete old image
              */
             if ($variant->image &&
                 Storage::disk('public')->exists($variant->image)) {
-
                 Storage::disk('public')
                     ->delete($variant->image);
             }
@@ -110,7 +119,6 @@ class ProductVariantController extends Controller
          */
         if ($variant->image &&
             Storage::disk('public')->exists($variant->image)) {
-
             Storage::disk('public')
                 ->delete($variant->image);
         }
