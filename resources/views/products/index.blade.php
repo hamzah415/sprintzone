@@ -124,7 +124,9 @@
 
                                     {{-- STOCK --}}
                                     <td class="px-6 py-4">
-                                        <span class="text-green-600 font-bold text-xs">{{ $product->stock }} pcs</span>
+                                        <span class="text-green-600 font-bold text-xs">
+                                            {{ $product->variants->sum('stock') }} pcs
+                                        </span>
                                     </td>
 
                                     {{-- STATUS --}}
@@ -322,12 +324,6 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
-
-                <div class="mb-5">
-                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Image</label>
-                    <input type="file" name="image"
-                        class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-black file:bg-gray-900 file:text-white hover:file:bg-gray-700 cursor:pointer">
                 </div>
 
                 <div class="mb-5">

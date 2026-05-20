@@ -22,11 +22,11 @@ class Product extends Model
         'updated_by',
     ];
 
-    protected $casts = [
-        'price' => 'integer',
-        'discount_price' => 'integer',
-        'stock' => 'integer',
-    ];
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function category(): BelongsTo
     {
@@ -56,5 +56,16 @@ class Product extends Model
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessor
+    |--------------------------------------------------------------------------
+    */
+
+    public function getTotalStockAttribute()
+    {
+        return $this->variants->sum('stock');
     }
 }
