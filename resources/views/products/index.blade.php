@@ -122,14 +122,11 @@
                                         {{ $product->brand->name ?? '-' }}
                                     </td>
 
-                                    {{-- STOCK (di tabel utama) --}}
+                                    {{-- STOCK --}}
                                     <td class="px-6 py-4">
-                                        @php
-                                            $totalStock = $product->variants->sum(function ($v) {
-                                                return $v->sizes->sum('stock') + ($v->stock ?? 0);
-                                            });
-                                        @endphp
-                                        <span class="text-green-600 font-bold text-xs">{{ $totalStock }} pcs</span>
+                                        <span class="text-green-600 font-bold text-xs">
+                                            {{ $product->variants->sum('stock') }} pcs
+                                        </span>
                                     </td>
 
                                     {{-- STATUS --}}
@@ -234,73 +231,53 @@
                                                                     @endif
                                                                 </td>
                                                                 <td class="py-2 font-bold">{{ $variant->color }}</td>
-                                                                {{-- SIZES COLUMN --}}
-                                                                <td class="py-2">
-                                                                    <div class="flex flex-wrap gap-1">
-                                                                        @foreach ($variant->sizes as $size)
-                                                                            <span
-                                                                                class="bg-gray-100 px-2 py-1 rounded text-[10px]">
-                                                                                {{ $size->size }} ({{ $size->stock }})
-                                                                            </span>
-                                                                        @endforeach
-                                                                        <button
-                                                                            onclick="openSizeModal({{ $variant->id }})"
-                                                                            class="text-orange-500 hover:underline text-[10px]">
-                                                                            + Add Size
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
+                                                                <td class="py-2">{{ $variant->size }}</td>
                                                                 <td class="py-2">{{ $variant->sku ?? '-' }}</td>
                                                                 <td class="py-2 font-bold">Rp
                                                                     {{ number_format($variant->price, 0, ',', '.') }}</td>
                                                                 <td class="py-2 text-red-500">
                                                                     {{ $variant->discount_price ? 'Rp ' . number_format($variant->discount_price, 0, ',', '.') : '-' }}
                                                                 </td>
+                                                                <td class="py-2 font-bold text-green-600">
+                                                                    {{ $variant->stock }}</td>
                                                                 <td class="py-2">
-                                                                    @php
-                                                                        $variantStock =
-                                                                            $variant->sizes->sum('stock') +
-                                                                            ($variant->stock ?? 0);
-                                                                    @endphp
                                                                     <span
-                                                                        class="font-bold text-green-600">{{ $variantStock }}</span>
+                                                                        class="text-gray-500">{{ $variant->creator->name ?? '-' }}</span>
+                                                                    <span
+                                                                        class="text-gray-400 text-[10px] block">{{ $variant->created_at->format('d M Y') }}</span>
                                                                 </td>
-                                                                <span
-                                                                    class="text-gray-500">{{ $variant->creator->name ?? '-' }}</span>
-                                                                <span
-                                                                    class="text-gray-400 text-[10px] block">{{ $variant->created_at->format('d M Y') }}</span>
-                                    </td>
-                                    <td class="py-2">
-                                        <span class="text-gray-500">{{ $variant->updater->name ?? '-' }}</span>
-                                        <span
-                                            class="text-gray-400 text-[10px] block">{{ $variant->updated_at ? $variant->updated_at->format('d M Y') : '-' }}</span>
+                                                                <td class="py-2">
+                                                                    <span
+                                                                        class="text-gray-500">{{ $variant->updater->name ?? '-' }}</span>
+                                                                    <span
+                                                                        class="text-gray-400 text-[10px] block">{{ $variant->updated_at ? $variant->updated_at->format('d M Y') : '-' }}</span>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <p class="text-center text-gray-400 py-4 text-xs">No variant data</p>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="py-20 text-center">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-box text-gray-300 text-5xl mb-4"></i>
+                                            <p class="text-gray-400 font-medium text-sm tracking-wide">There is no product
+                                                data yet.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                @else
-                    <p class="text-center text-gray-400 py-4 text-xs">No variant data</p>
-                    @endif
                 </div>
-                </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8" class="py-20 text-center">
-                        <div class="flex flex-col items-center justify-center">
-                            <i class="fas fa-box text-gray-300 text-5xl mb-4"></i>
-                            <p class="text-gray-400 font-medium text-sm tracking-wide">There is no product
-                                data yet.</p>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-                </tbody>
-                </table>
             </div>
         </div>
-    </div>
     </div>
 
     {{-- PRODUCT MODAL --}}
@@ -377,12 +354,14 @@
         </div>
     </div>
 
-    {{-- VARIANT MODAL (DENGAN SIZES) --}}
-    <div id="variantModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="bg-gray-900 px-6 py-4 flex justify-between sticky top-0">
-                <h3 class="text-white font-black uppercase" id="variantModalTitle">Add Variant</h3>
-                <button onclick="closeVariantModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+    {{-- VARIANT MODAL --}}
+    <div id="variantModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-sm shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-white font-black italic uppercase tracking-widest text-lg" id="variantModalTitle">Add
+                    Variant</h3>
+                <button onclick="closeVariantModal()"
+                    class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
             </div>
             <form id="variantForm" method="POST" enctype="multipart/form-data" class="p-6">
                 @csrf
@@ -391,76 +370,55 @@
 
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Color</label>
-                        <input type="text" name="color" id="variant_color" class="w-full border-2 p-3" required>
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Color</label>
+                        <input type="text" name="color" id="variant_color"
+                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">SKU</label>
-                        <input type="text" name="sku" id="variant_sku" class="w-full border-2 p-3">
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Size</label>
+                        <input type="text" name="size" id="variant_size"
+                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Price</label>
-                        <input type="number" name="price" id="variant_price" class="w-full border-2 p-3">
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">SKU</label>
+                        <input type="text" name="sku" id="variant_sku"
+                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Discount</label>
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Stock</label>
+                        <input type="number" name="stock" id="variant_stock"
+                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Price</label>
+                        <input type="number" name="price" id="variant_price"
+                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Discount</label>
                         <input type="number" name="discount_price" id="variant_discount_price"
-                            class="w-full border-2 p-3">
+                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
                     </div>
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Image</label>
-                    <input type="file" name="image" class="w-full text-sm">
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Image</label>
+                    <input type="file" name="image"
+                        class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-xs file:font-black file:bg-gray-900 file:text-white hover:file:bg-gray-700 cursor:pointer">
                 </div>
 
-                {{-- SIZES SECTION (Hanya tampil saat edit) --}}
-                <div id="sizesSection" class="hidden">
-                    <div class="border-t pt-4 mb-4">
-                        <div class="flex justify-between items-center mb-3">
-                            <label class="text-xs font-bold text-gray-500 uppercase">Sizes</label>
-                            <button type="button" onclick="openSizeModalFromEdit()"
-                                class="text-xs text-orange-500 font-bold">+ Add Size</button>
-                        </div>
-                        <div id="sizesList" class="space-y-2">
-                            {{-- Sizes akan di-load via JS --}}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-3">
+                <div class="flex justify-end gap-3 mt-8">
                     <button type="button" onclick="closeVariantModal()"
-                        class="px-6 py-2 text-sm font-bold text-gray-400">Cancel</button>
-                    <button type="submit" class="px-8 py-2 bg-orange-600 text-white text-sm font-bold">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- SIZE MODAL --}}
-    <div id="sizeModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-white w-full max-w-sm rounded-lg">
-            <div class="bg-gray-900 px-4 py-3 flex justify-between">
-                <h3 class="text-white font-bold uppercase text-sm" id="sizeModalTitle">Add Size</h3>
-                <button onclick="closeSizeModal()" class="text-gray-400">&times;</button>
-            </div>
-            <form id="sizeForm" method="POST" class="p-4">
-                @csrf
-                <div id="sizeMethodField"></div>
-                <input type="hidden" name="variant_id" id="size_variant_id">
-                <input type="hidden" name="size_id" id="size_id">
-                <div class="mb-3">
-                    <label class="block text-xs font-bold mb-1">Size</label>
-                    <input type="text" name="size" id="size_name" class="w-full border p-2 rounded" required>
-                </div>
-                <div class="mb-3">
-                    <label class="block text-xs font-bold mb-1">Stock</label>
-                    <input type="number" name="stock" id="size_stock" class="w-full border p-2 rounded" required>
-                </div>
-                <div class="flex gap-2">
-                    <button type="button" onclick="deleteSize()" id="deleteSizeBtn"
-                        class="hidden px-4 py-2 bg-red-500 text-white rounded text-sm">Hapus</button>
-                    <button type="submit" class="flex-1 bg-orange-500 text-white py-2 rounded font-bold">Simpan</button>
+                        class="px-6 py-2 text-xs font-black uppercase tracking-widest text-gray-400">Cancel</button>
+                    <button type="submit"
+                        class="px-8 py-2 bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-sm hover:bg-orange-700 shadow-md">Save
+                        Data</button>
                 </div>
             </form>
         </div>
@@ -470,16 +428,15 @@
     <x-delete-modal />
 
     <script>
-        let currentVariantId = null;
-
         // Toggle Variant Row
         function toggleVariant(id) {
             document.getElementById('variant-row-' + id).classList.toggle('hidden');
             document.getElementById('arrow-' + id).classList.toggle('rotate-180');
         }
 
-        // Product Modal
+        // Product Modal - yang sudah diperbaiki
         function openProductModal(mode, data = null) {
+            const modal = document.getElementById('productModal');
             const form = document.getElementById('productForm');
             const title = document.getElementById('modalTitle');
             const methodField = document.getElementById('formMethod');
@@ -488,6 +445,8 @@
                 title.textContent = 'New Product';
                 form.action = '{{ route('products.store') }}';
                 methodField.value = 'POST';
+
+                // Reset semua field
                 document.getElementById('productName').value = '';
                 document.getElementById('productCategory').value = '';
                 document.getElementById('productBrand').value = '';
@@ -497,137 +456,66 @@
                 title.textContent = 'Edit Product';
                 form.action = '/products/' + data.id;
                 methodField.value = 'PUT';
+
                 document.getElementById('productName').value = data.name;
                 document.getElementById('productCategory').value = data.category_id || '';
                 document.getElementById('productBrand').value = data.brand_id || '';
                 document.getElementById('productStatus').value = data.status;
                 document.getElementById('productDesc').value = data.description || '';
             }
-            document.getElementById('productModal').classList.remove('hidden');
+
+            modal.classList.remove('hidden');
         }
 
         function closeProductModal() {
             document.getElementById('productModal').classList.add('hidden');
         }
 
-        // Variant Modal - Add
+        // Variant Modal
         function openVariantModal(productId) {
-            currentVariantId = null;
+            const modal = document.getElementById('variantModal');
+            const form = document.getElementById('variantForm');
+
             document.getElementById('variantModalTitle').textContent = 'Add Variant';
             document.getElementById('variant_product_id').value = productId;
-            document.getElementById('variantForm').action = '{{ route('variants.store') }}';
+            form.action = '{{ route('variants.store') }}';
             document.getElementById('variantMethodField').innerHTML = '@csrf';
 
-            document.getElementById('variant_color').value = '';
-            document.getElementById('variant_sku').value = '';
-            document.getElementById('variant_price').value = '';
-            document.getElementById('variant_discount_price').value = '';
-            document.getElementById('sizesSection').classList.add('hidden');
-
-            document.getElementById('variantModal').classList.remove('hidden');
+            form.reset();
+            modal.classList.remove('hidden');
         }
 
-        // Variant Modal - Edit
         function openVariantEditModal(variant) {
-            currentVariantId = variant.id;
+            const modal = document.getElementById('variantModal');
+            const form = document.getElementById('variantForm');
+
             document.getElementById('variantModalTitle').textContent = 'Edit Variant';
-            document.getElementById('variantForm').action = '/variants/' + variant.id;
+            form.action = '/variants/' + variant.id;
             document.getElementById('variantMethodField').innerHTML = '@csrf @method('PUT')';
 
             document.getElementById('variant_product_id').value = variant.product_id;
             document.getElementById('variant_color').value = variant.color;
+            document.getElementById('variant_size').value = variant.size;
             document.getElementById('variant_sku').value = variant.sku || '';
+            document.getElementById('variant_stock').value = variant.stock;
             document.getElementById('variant_price').value = variant.price;
             document.getElementById('variant_discount_price').value = variant.discount_price || '';
 
-            // Show sizes section
-            const sizes = variant.sizes || [];
-            document.getElementById('sizesSection').classList.remove('hidden');
-            renderSizes(sizes);
-
-            document.getElementById('variantModal').classList.remove('hidden');
-        }
-
-        function renderSizes(sizes) {
-            const container = document.getElementById('sizesList');
-            if (!sizes || sizes.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-xs">Belum ada size</p>';
-                return;
-            }
-            container.innerHTML = sizes.map(s =>
-                `<div class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
-            <div>
-                <span class="font-bold text-sm">${s.size}</span>
-                <span class="text-xs text-gray-500 ml-2">Stock: ${s.stock}</span>
-            </div>
-            <div class="flex gap-2">
-                <button type="button" onclick="openSizeEditModal(${s.id}, '${s.size}', ${s.stock})" class="text-xs text-orange-500 hover:underline">Edit</button>
-                <button type="button" onclick="deleteSize(${s.id})" class="text-xs text-red-500 hover:underline">Hapus</button>
-            </div>
-        </div>`
-            ).join('');
+            modal.classList.remove('hidden');
         }
 
         function closeVariantModal() {
             document.getElementById('variantModal').classList.add('hidden');
         }
 
-        // Size Modal - Add
-        function openSizeModal(variantId) {
-            document.getElementById('sizeModalTitle').textContent = 'Add Size';
-            document.getElementById('sizeForm').action = '/variant-sizes';
-            document.getElementById('sizeMethodField').innerHTML = '@csrf';
-            document.getElementById('size_variant_id').value = variantId;
-            document.getElementById('size_id').value = '';
-            document.getElementById('size_name').value = '';
-            document.getElementById('size_stock').value = '';
-            document.getElementById('deleteSizeBtn').classList.add('hidden');
-            document.getElementById('sizeModal').classList.remove('hidden');
-        }
-
-        function openSizeModalFromEdit() {
-            openSizeModal(currentVariantId);
-        }
-
-        // Size Modal - Edit
-        function openSizeEditModal(sizeId, size, stock) {
-            document.getElementById('sizeModalTitle').textContent = 'Edit Size';
-            document.getElementById('sizeForm').action = '/variant-sizes/' + sizeId;
-            document.getElementById('sizeMethodField').innerHTML = '@csrf @method('PUT')';
-            document.getElementById('size_variant_id').value = currentVariantId;
-            document.getElementById('size_id').value = sizeId;
-            document.getElementById('size_name').value = size;
-            document.getElementById('size_stock').value = stock;
-            document.getElementById('deleteSizeBtn').classList.remove('hidden');
-            document.getElementById('sizeModal').classList.remove('hidden');
-        }
-
-        // Delete Size
-        function deleteSize(sizeId) {
-            if (confirm('Hapus size ini?')) {
-                fetch('/variant-sizes/' + sizeId, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => location.reload())
-                    .catch(err => location.reload());
-            }
-        }
-
-        function closeSizeModal() {
-            document.getElementById('sizeModal').classList.add('hidden');
-        }
+        // Delete Modal (gunakan komponen delete-modal)
+        // function openDeleteModal ada di components/delete-modal.blade.php
 
         // Close on Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeProductModal();
                 closeVariantModal();
-                closeSizeModal();
             }
         });
     </script>

@@ -96,22 +96,17 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product = Product::with(['variants.sizes', 'category', 'brand'])->findOrFail($id);
-        
-        $product->load(['variants.sizes', 'category', 'brand']);
+        $product = Product::with(['category', 'brand', 'variants'])->findOrFail($product->id);
 
         return view('products.show', compact('product'));
     }
-
-    
-
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Product $product)
     {
-        $product->load(['variants.sizes', 'category', 'brand']);
+        $product = Product::with(['category', 'brand', 'variants'])->findOrFail($product->id);
 
         return view('products.edit', compact('product'));
     }
