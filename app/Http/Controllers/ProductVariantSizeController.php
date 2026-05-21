@@ -10,7 +10,7 @@ class ProductVariantSizeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'variant_id' => 'required|exists:product_variants,id',
+            'variant_id' => 'required',
             'size' => 'required',
             'stock' => 'required|integer|min:0',
         ]);
@@ -22,7 +22,7 @@ class ProductVariantSizeController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        return back()->with('success', 'Size berhasil ditambahkan!');
+        return back()->with('success', 'Size ditambahkan!');
     }
 
     public function update(Request $request, ProductVariantSize $variantSize)
@@ -38,12 +38,12 @@ class ProductVariantSizeController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
-        return back()->with('success', 'Size berhasil diperbarui!');
+        return back()->with('success', 'Size diperbarui!');
     }
 
     public function destroy(ProductVariantSize $variantSize)
     {
         $variantSize->delete();
-        return back()->with('success', 'Size berhasil dihapus!');
+        return back()->with('success', 'Size dihapus!');
     }
 }

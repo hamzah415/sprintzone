@@ -11,6 +11,7 @@ class CartItem extends Model
         'user_id',
         'product_id',
         'variant_id',
+        'size_id',
         'qty',
     ];
 
@@ -22,5 +23,10 @@ class CartItem extends Model
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class);
+    }
+
+    public function size()
+    {
+        return $this->belongsTo(ProductVariantSize::class, 'size_id');
     }
 }
