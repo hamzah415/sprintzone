@@ -19,6 +19,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductVariantController;
+use App\Http\Controllers\ProductVariantSizeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -193,6 +194,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Purchase History
     Route::get('/My-Order', [CheckoutController::class, 'myorder'])->name('myorder.index');
+
+    // size varian
+    Route::resource('variant-sizes', ProductVariantSizeController::class);
 
     // Logout
     Route::post('/logout', function () {

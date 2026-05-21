@@ -2,54 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductVariant extends Model
 {
-    use HasFactory;
-
-    protected $table = 'product_variants';
-
     protected $fillable = [
         'product_id',
-        'company_id',
         'color',
         'size',
         'sku',
         'price',
         'discount_price',
         'stock',
-        'weight',
         'image',
         'created_by',
         'updated_by',
-        'deleted_by',
-        'is_deleted',
-        'deleted_date',
     ];
 
-    protected $casts = [
-        'price' => 'decimal:2',
-        'discount_price' => 'decimal:2',
-        'is_deleted' => 'boolean',
-        'deleted_date' => 'datetime',
-    ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
-
-    public function product()
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
-    public function company()
+    public function sizes(): HasMany
     {
-        return $this->belongsTo(Company::class);
+        return $this->hasMany(ProductVariantSize::class, 'variant_id');
     }
 
     public function creator()
@@ -62,8 +41,10 @@ class ProductVariant extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function deleter()
+    // Total stock dari semua sizes + stock utama
+    public function getTotalStockAttribute()
     {
-        return $this->belongsTo(User::class, 'deleted_by');
+        $sizeStock = $this->sizes->sum('stock');
+        return ($this->stock ?? 0) + $sizeStock;
     }
 }
