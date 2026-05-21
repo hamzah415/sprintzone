@@ -4,20 +4,21 @@
 
 @section('styles')
     .shoe-shadow {
-        filter: drop-shadow(0 35px 35px rgba(0,0,0,0.25));
-        transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 35px 35px rgba(0,0,0,0.25));
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .shoe-container:hover .shoe-image {
-        transform: rotate(-10deg) scale(1.6);
+    transform: rotate(-10deg) scale(1.6);
     }
     .variant-btn.active {
-        background: black;
-        color: white;
+    background: black;
+    color: white;
     }
 @endsection
 
 @section('content')
-    <main class="relative flex-1 flex flex-col md:flex-row items-center px-6 md:px-20 py-10 md:py-0 overflow-hidden bg-white">
+    <main
+        class="relative flex-1 flex flex-col md:flex-row items-center px-6 md:px-20 py-10 md:py-0 overflow-hidden bg-white">
         <div class="z-20 w-full md:w-1/2 text-center md:text-left order-1">
             <h2 class="text-5xl md:text-[7.5rem] font-black italic uppercase leading-[0.85] mb-6 tracking-tighter">
                 Power Your <br><span class="text-orange-500 md:text-black">Steps</span>
@@ -30,7 +31,8 @@
                 Buy now
             </button>
         </div>
-        <div class="shoe-container relative w-full md:w-1/2 h-[350px] md:h-full flex justify-center items-center mt-12 md:mt-0 order-2">
+        <div
+            class="shoe-container relative w-full md:w-1/2 h-[350px] md:h-full flex justify-center items-center mt-12 md:mt-0 order-2">
             <div class="absolute w-72 h-72 bg-orange-100 rounded-full blur-[110px] opacity-40 animate-pulse"></div>
             <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070"
                 class="shoe-image shoe-shadow relative z-10 w-full max-w-md md:max-w-4xl transform rotate-[-15deg] md:rotate-[-20deg] scale-110 md:scale-150 object-contain">
@@ -63,7 +65,9 @@
                                 $productImage = null;
                                 if ($product->variants->isNotEmpty()) {
                                     $variantWithImage = $product->variants->firstWhere(fn($v) => !empty($v['image']));
-                                    if ($variantWithImage) $productImage = $variantWithImage['image'];
+                                    if ($variantWithImage) {
+                                        $productImage = $variantWithImage['image'];
+                                    }
                                 }
                             @endphp
 
@@ -71,12 +75,32 @@
                                 <img src="{{ asset('storage/' . $productImage) }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
+                                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image
+                                </div>
                             @endif
 
-                            @if ($product->status == 'active')
-                                <div class="absolute top-3 left-3">
-                                    <span class="bg-black text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">New</span>
+                            {{-- STATUS LABEL --}}
+                            <div class="absolute top-3 left-3">
+                                @if ($product->status == 'active')
+                                    <span
+                                        class="bg-black text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">New</span>
+                                @endif
+                            </div>
+
+                            {{-- HABIS LABEL --}}
+                            @php
+                                // Cek total stock
+                                $totalStock = 0;
+                                if ($product->variants->isNotEmpty()) {
+                                    $totalStock = $product->variants->sum('stock');
+                                } else {
+                                    $totalStock = $product->stock ?? 0;
+                                }
+                            @endphp
+                            @if ($totalStock <= 0)
+                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
+                                    <span
+                                        class="bg-red-600 text-white text-xs font-black px-3 py-1 uppercase italic rounded">Habis</span>
                                 </div>
                             @endif
                         </div>
@@ -96,8 +120,12 @@
                                 if ($product->variants->isNotEmpty()) {
                                     $variantPrices = $product->variants->pluck('price')->filter();
                                     $variantDiscounts = $product->variants->pluck('discount_price')->filter();
-                                    if ($variantPrices->isNotEmpty()) $minPrice = $variantPrices->min();
-                                    if ($variantDiscounts->isNotEmpty()) $minDiscount = $variantDiscounts->min();
+                                    if ($variantPrices->isNotEmpty()) {
+                                        $minPrice = $variantPrices->min();
+                                    }
+                                    if ($variantDiscounts->isNotEmpty()) {
+                                        $minDiscount = $variantDiscounts->min();
+                                    }
                                 }
                                 $hasDiscount = $minDiscount && $minDiscount < $minPrice;
                             @endphp
@@ -119,13 +147,20 @@
                         </div>
                     </a>
 
-                    {{-- BUTTON --}}
+                    {{-- BUTTON (disabled kalau habis) --}}
                     @auth
-                        <button type="button" 
-                            onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
-                            class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                            Add to Cart
-                        </button>
+                        @if ($totalStock > 0)
+                            <button type="button"
+                                onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
+                                class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                                Add to Cart
+                            </button>
+                        @else
+                            <button disabled
+                                class="w-full mt-4 bg-gray-200 text-gray-500 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
+                                Habis
+                            </button>
+                        @endif
                     @else
                         <a href="{{ route('login') }}"
                             class="block w-full mt-4 text-center hover:no-underline bg-gray-100 hover:bg-orange-600 hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
@@ -152,7 +187,8 @@
                     <h3 class="text-white font-black italic uppercase">Pilih Variant</h3>
                     <p class="text-gray-400 text-xs" id="modalProductName"></p>
                 </div>
-                <button onclick="closeVariantModal()" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+                <button onclick="closeVariantModal()"
+                    class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
             </div>
             <form id="variantForm" method="POST" class="p-6">
                 @csrf
@@ -165,7 +201,8 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih Ukuran</label>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih
+                        Ukuran</label>
                     <div class="flex flex-wrap gap-2" id="sizeOptions"></div>
                 </div>
 
@@ -184,7 +221,8 @@
                     <label class="text-xs font-black text-gray-500 uppercase tracking-widest">Jumlah</label>
                     <div class="flex items-center border rounded-lg overflow-hidden">
                         <button type="button" onclick="modalDecreaseQty()" class="w-10 h-10 hover:bg-gray-100">-</button>
-                        <input type="number" id="modalQtyInput" value="1" readonly class="w-12 text-center border-0 outline-none">
+                        <input type="number" id="modalQtyInput" value="1" readonly
+                            class="w-12 text-center border-0 outline-none">
                         <button type="button" onclick="modalIncreaseQty()" class="w-10 h-10 hover:bg-gray-100">+</button>
                     </div>
                 </div>
@@ -202,7 +240,7 @@
         // Simpan semua variants
         const allProductVariants = {};
 
-        @foreach($products ?? [] as $product)
+        @foreach ($products ?? [] as $product)
             allProductVariants[{{ $product->id }}] = @json($product->variants);
         @endforeach
 
@@ -234,13 +272,13 @@
 
             // Render colors
             const uniqueColors = [...new Set(currentVariants.map(v => v.color))];
-            document.getElementById('colorOptions').innerHTML = uniqueColors.map(color => 
+            document.getElementById('colorOptions').innerHTML = uniqueColors.map(color =>
                 `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-color="${color}">${color}</button>`
             ).join('');
 
             // Render sizes
             const uniqueSizes = [...new Set(currentVariants.map(v => v.size))];
-            document.getElementById('sizeOptions').innerHTML = uniqueSizes.map(size => 
+            document.getElementById('sizeOptions').innerHTML = uniqueSizes.map(size =>
                 `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-size="${size}">${size}</button>`
             ).join('');
 
@@ -253,7 +291,8 @@
             // Add events
             document.querySelectorAll('#colorOptions .variant-btn').forEach(btn => {
                 btn.onclick = function() {
-                    document.querySelectorAll('#colorOptions .variant-btn').forEach(b => b.classList.remove('active', 'bg-black', 'text-white'));
+                    document.querySelectorAll('#colorOptions .variant-btn').forEach(b => b.classList.remove(
+                        'active', 'bg-black', 'text-white'));
                     this.classList.add('active', 'bg-black', 'text-white');
                     selectedColor = this.dataset.color;
                     findModalVariant();
@@ -262,7 +301,8 @@
 
             document.querySelectorAll('#sizeOptions .variant-btn').forEach(btn => {
                 btn.onclick = function() {
-                    document.querySelectorAll('#sizeOptions .variant-btn').forEach(b => b.classList.remove('active', 'bg-black', 'text-white'));
+                    document.querySelectorAll('#sizeOptions .variant-btn').forEach(b => b.classList.remove(
+                        'active', 'bg-black', 'text-white'));
                     this.classList.add('active', 'bg-black', 'text-white');
                     selectedSize = this.dataset.size;
                     findModalVariant();
@@ -272,23 +312,23 @@
 
         function directAddToCart(productId) {
             fetch('/cart/' + productId, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Error');
-                }
-            })
-            .catch(error => {
-                window.location.href = '/cart/' + productId;
-            });
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Error');
+                    }
+                })
+                .catch(error => {
+                    window.location.href = '/cart/' + productId;
+                });
         }
 
         function findModalVariant() {
@@ -303,7 +343,8 @@
             selectedVariant = currentVariants.find(v => v.color === selectedColor && v.size === selectedSize);
 
             if (selectedVariant && selectedVariant.stock > 0) {
-                const hasDiscount = selectedVariant.discount_price && selectedVariant.discount_price < selectedVariant.price;
+                const hasDiscount = selectedVariant.discount_price && selectedVariant.discount_price < selectedVariant
+                .price;
                 const price = hasDiscount ? selectedVariant.discount_price : selectedVariant.price;
 
                 document.getElementById('variantInfo').classList.remove('hidden');

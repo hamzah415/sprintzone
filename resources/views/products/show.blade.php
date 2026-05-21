@@ -73,11 +73,10 @@
                 {{-- LEFT --}}
                 <div class="space-y-5">
 
-                    {{-- MAIN IMAGE (cek dari variant kalo ga ada) --}}
+                    {{-- MAIN IMAGE --}}
                     <div class="bg-gray-100 rounded-2xl overflow-hidden relative">
 
                         @php
-                            // Cek gambar: produk dulu, kalo ga ada ambil dari variant
                             $mainImage = $product->image;
                             if (!$mainImage && $product->variants->isNotEmpty()) {
                                 $variantWithImage = $product->variants->firstWhere(fn($v) => !empty($v['image']));
@@ -86,7 +85,6 @@
                                 }
                             }
 
-                            // Cek harga: produk dulu, kalo 0 ambil dari variant termurah
                             $mainPrice = $product->price ?? 0;
                             $mainDiscount = $product->discount_price ?? null;
                             if (!$mainPrice && $product->variants->isNotEmpty()) {
@@ -99,6 +97,8 @@
                                     $mainDiscount = $variantDiscounts->min();
                                 }
                             }
+
+                            $totalStock = $product->variants->sum('stock') ?? ($product->stock ?? 0);
                         @endphp
 
                         @if ($mainImage)
@@ -107,6 +107,15 @@
                         @else
                             <div class="w-full h-[500px] flex items-center justify-center text-gray-400">
                                 No Image
+                            </div>
+                        @endif
+
+                        {{-- LABEL HABIS KALO STOCK 0 --}}
+                        @if ($totalStock <= 0)
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
+                                <span class="bg-red-600 text-white text-lg font-black px-6 py-2 uppercase italic rounded">
+                                    Habis
+                                </span>
                             </div>
                         @endif
 
@@ -309,10 +318,17 @@
                                 <input type="hidden" name="qty" id="qtyHidden" value="1">
                                 <input type="hidden" name="variant_id" id="variantId">
 
-                                <button type="submit" id="addToCartBtn"
-                                    class="w-full bg-black hover:bg-orange-600 text-white py-4 rounded-2xl font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                    + Add To Cart
-                                </button>
+                                @if ($totalStock > 0)
+                                    <button type="submit" id="addToCartBtn"
+                                        class="w-full bg-black hover:bg-orange-600 text-white py-4 rounded-2xl font-semibold transition">
+                                        + Add To Cart
+                                    </button>
+                                @else
+                                    <button type="button" disabled
+                                        class="w-full bg-gray-300 text-gray-500 py-4 rounded-2xl font-semibold cursor-not-allowed">
+                                        Stok Habis
+                                    </button>
+                                @endif
                             </form>
                         @else
                             <a href="{{ route('login') }}"

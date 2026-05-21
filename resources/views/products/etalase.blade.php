@@ -50,20 +50,23 @@
 
         {{-- PRODUCT GRID --}}
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-            @forelse($products as $product)
+            @forelse($products ?? [] as $product)
                 <div class="group product-item" data-product-id="{{ $product->id }}">
+
                     <a href="{{ route('products.show', $product->id) }}" class="block no-underline hover:no-underline">
+                        {{-- IMAGE (dari variant) --}}
                         <div class="relative aspect-square overflow-hidden rounded-2xl bg-gray-100 mb-4">
                             @php
                                 // Cari gambar dari variant
-                                $productImage = $product->image;
-                                if (!$productImage && $product->variants->isNotEmpty()) {
+                                $productImage = null;
+                                if ($product->variants->isNotEmpty()) {
                                     $variantWithImage = $product->variants->firstWhere(fn($v) => !empty($v['image']));
                                     if ($variantWithImage) {
                                         $productImage = $variantWithImage['image'];
                                     }
                                 }
                             @endphp
+
                             @if ($productImage)
                                 <img src="{{ asset('storage/' . $productImage) }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
@@ -71,40 +74,58 @@
                                 <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image
                                 </div>
                             @endif
-                            @php
-                                $hasDiscount =
-                                    $product->discount_price && $product->discount_price < ($product->price ?? 0);
-                            @endphp
-                            @if ($hasDiscount)
-                                <div class="absolute top-3 right-3">
+
+                            {{-- STATUS LABEL --}}
+                            <div class="absolute top-3 left-3">
+                                @if ($product->status == 'active')
                                     <span
-                                        class="bg-red-600 text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">Sale</span>
+                                        class="bg-black text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">New</span>
+                                @endif
+                            </div>
+
+                            {{-- HABIS LABEL --}}
+                            @php
+                                // Cek total stock
+                                $totalStock = 0;
+                                if ($product->variants->isNotEmpty()) {
+                                    $totalStock = $product->variants->sum('stock');
+                                } else {
+                                    $totalStock = $product->stock ?? 0;
+                                }
+                            @endphp
+                            @if ($totalStock <= 0)
+                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
+                                    <span
+                                        class="bg-red-600 text-white text-xs font-black px-3 py-1 uppercase italic rounded">Habis</span>
                                 </div>
                             @endif
                         </div>
+
+                        {{-- INFO (harga dari variant) --}}
                         <div class="space-y-1">
                             <div class="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
-                                {{ $product->brand->name ?? 'Brand' }}
+                                {{ $product->brand->name ?? 'No Brand' }}
                             </div>
-                            <h3 class="font-bold text-sm text-gray-800 leading-tight">
+                            <h3 class="font-bold text-sm text-gray-800 leading-tight line-clamp-2">
                                 {{ $product->name }}
                             </h3>
                             @php
-                                // Cari harga dari variant
-                                $minPrice = $product->price ?? 0;
-                                $minDiscount = $product->discount_price;
+                                // Cari harga dari variant termurah
+                                $minPrice = 0;
+                                $minDiscount = null;
                                 if ($product->variants->isNotEmpty()) {
-                                    $vp = $product->variants->pluck('price')->filter();
-                                    $vd = $product->variants->pluck('discount_price')->filter();
-                                    if ($vp->isNotEmpty()) {
-                                        $minPrice = $vp->min();
+                                    $variantPrices = $product->variants->pluck('price')->filter();
+                                    $variantDiscounts = $product->variants->pluck('discount_price')->filter();
+                                    if ($variantPrices->isNotEmpty()) {
+                                        $minPrice = $variantPrices->min();
                                     }
-                                    if ($vd->isNotEmpty()) {
-                                        $minDiscount = $vd->min();
+                                    if ($variantDiscounts->isNotEmpty()) {
+                                        $minDiscount = $variantDiscounts->min();
                                     }
                                 }
                                 $hasDiscount = $minDiscount && $minDiscount < $minPrice;
                             @endphp
+
                             @if ($hasDiscount)
                                 <div class="flex items-center gap-2">
                                     <div class="text-lg font-black italic tracking-tighter text-gray-900">
@@ -122,23 +143,33 @@
                         </div>
                     </a>
 
-                    {{-- BUTTON --}}
+                    {{-- BUTTON (disabled kalau habis) --}}
                     @auth
-                        <button type="button"
-                            onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
-                            class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                            Add to Cart
-                        </button>
+                        @if ($totalStock > 0)
+                            <button type="button"
+                                onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
+                                class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                                Add to Cart
+                            </button>
+                        @else
+                            <button disabled
+                                class="w-full mt-4 bg-gray-200 text-gray-500 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
+                                Habis
+                            </button>
+                        @endif
                     @else
                         <a href="{{ route('login') }}"
-                            class="block w-full mt-4 text-center bg-gray-100 hover:bg-orange-600 hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                            class="block w-full mt-4 text-center hover:no-underline bg-gray-100 hover:bg-orange-600 hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
                             Add to Cart
                         </a>
                     @endauth
                 </div>
             @empty
                 <div class="col-span-full text-center py-20">
-                    <p class="text-gray-400 font-bold">No Product Available</p>
+                    <div class="flex flex-col items-center justify-center">
+                        <i class="fas fa-box-open text-gray-300 text-5xl mb-4"></i>
+                        <p class="text-gray-400 font-medium text-sm tracking-wide">There is no product data yet.</p>
+                    </div>
                 </div>
             @endforelse
         </div>
@@ -221,7 +252,8 @@
                 <div class="flex items-center gap-4 mb-4">
                     <label class="text-xs font-black text-gray-500 uppercase tracking-widest">Jumlah</label>
                     <div class="flex items-center border rounded-lg overflow-hidden">
-                        <button type="button" onclick="modalDecreaseQty()" class="w-10 h-10 hover:bg-gray-100">-</button>
+                        <button type="button" onclick="modalDecreaseQty()"
+                            class="w-10 h-10 hover:bg-gray-100">-</button>
                         <input type="number" id="modalQtyInput" value="1" readonly
                             class="w-12 text-center border-0 outline-none">
                         <button type="button" onclick="modalIncreaseQty()"
@@ -336,7 +368,7 @@
 
             if (selectedVariant && selectedVariant.stock > 0) {
                 const hasDiscount = selectedVariant.discount_price && selectedVariant.discount_price < selectedVariant
-                .price;
+                    .price;
                 const price = hasDiscount ? selectedVariant.discount_price : selectedVariant.price;
 
                 document.getElementById('variantInfo').classList.remove('hidden');

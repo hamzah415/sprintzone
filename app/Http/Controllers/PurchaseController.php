@@ -9,7 +9,7 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('user')
+        $orders = Order::with(['items.product', 'items.variant'])
             ->latest()
             ->get();
 
