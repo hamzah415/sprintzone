@@ -94,15 +94,15 @@ Route::get('/brand', function () {
     return view('brand');
 })->name('brand');
 
-// Search API (untuk popup autocomplete)
-Route::get('/api/search', function () {
+// Search Page (hasil lengkap)
+Route::get('/search', function () {
     $query = request('q');
 
     if (empty($query)) {
-        return response()->json([]);
+        return redirect('/');
     }
 
-    $products = \App\Models\Product::with('brand')
+    $products = \App\Models\Product::with(['brand', 'variants'])
         ->where('status', 'active')
         ->where(function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%")
@@ -110,20 +110,11 @@ Route::get('/api/search', function () {
                     $b->where('name', 'like', "%{$query}%");
                 });
         })
-        ->limit(5)
-        ->get()
-        ->map(function ($p) {
-            return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'price' => $p->discount_price ?? $p->price,
-                'brand_name' => $p->brand->name ?? '',
-                'image' => $p->image,
-            ];
-        });
+        ->latest()
+        ->paginate(12);
 
-    return response()->json($products);
-})->name('api.search');
+    return view('search', compact('products', 'query'));
+})->name('search');
 
 // Search Page (hasil lengkap)
 Route::get('/search', function () {

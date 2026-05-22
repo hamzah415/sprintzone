@@ -89,71 +89,71 @@
             </div>
 
             {{-- SEARCH POPUP --}}
-            <form action="{{ route('search') }}" method="GET" class="hidden md:block flex-1 max-w-xl mx-10 relative"
-                x-data="{
-                    q: '',
-                    results: [],
-                    loading: false,
-                    async search() {
-                        if (this.q.length < 2) {
-                            this.results = [];
-                            return;
-                        }
-                        this.loading = true;
-                        try {
-                            const res = await fetch('/api/search?q=' + encodeURIComponent(this.q));
-                            this.results = await res.json();
-                        } catch (e) {}
-                        this.loading = false;
-                    }
-                }">
-                <div class="relative">
-                    <input type="text" x-model="q" @input.debounce.300ms="search()" name="q"
-                        placeholder="Search produk atau brand..."
-                        class="w-full py-2 px-10 rounded-lg border-none focus:ring-2 focus:ring-orange-400 outline-none shadow-sm"
-                        autocomplete="off">
-                    <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
+<form action="{{ route('search') }}" method="GET" class="hidden md:block flex-1 max-w-xl mx-10 relative"
+    x-data="{
+        q: '',
+        results: [],
+        loading: false,
+        async search() {
+            if (this.q.length < 2) {
+                this.results = [];
+                return;
+            }
+            this.loading = true;
+            try {
+                const res = await fetch('/api/search?q=' + encodeURIComponent(this.q));
+                this.results = await res.json();
+            } catch (e) {}
+            this.loading = false;
+        }
+    }">
+    <div class="relative">
+        <input type="text" x-model="q" @input.debounce.300ms="search()" name="q"
+            placeholder="Search produk atau brand..."
+            class="w-full py-2 px-10 rounded-lg border-none focus:ring-2 focus:ring-orange-400 outline-none shadow-sm"
+            autocomplete="off">
+        <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+    </div>
 
-                {{-- POPUP HASIL --}}
-                <div x-show="q.length >= 2" x-cloak
-                    class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border max-h-80 overflow-y-auto z-50"
-                    @click.outside="q = ''">
+    {{-- POPUP HASIL --}}
+    <div x-show="q.length >= 2" x-cloak
+        class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border max-h-80 overflow-y-auto z-50"
+        @click.outside="q = ''">
 
-                    <div x-show="loading" class="p-4 text-center text-gray-400">Mencari...</div>
+        <div x-show="loading" class="p-4 text-center text-gray-400">Mencari...</div>
 
-                    <div x-show="!loading && results.length === 0 && q.length >= 2"
-                        class="p-4 text-center text-gray-400">
-                        Produk tidak ditemukan
+        <div x-show="!loading && results.length === 0 && q.length >= 2"
+            class="p-4 text-center text-gray-400">
+            Produk tidak ditemukan
+        </div>
+
+        <div x-show="!loading && results.length > 0">
+            <template x-for="product in results" :key="product.id">
+                <a :href="'/etalase/' + product.id"
+                    class="flex items-center gap-3 p-3 hover:bg-orange-50 border-b no-underline text-dark">
+                    <img :src="product.image ? '/storage/' + product.image : '/img/no-image.png'"
+                        class="w-12 h-12 rounded-lg object-cover bg-gray-100">
+                    <div class="flex-1">
+                        <div class="text-sm font-bold text-gray-800" x-text="product.name"></div>
+                        <div class="text-xs text-orange-500" x-text="product.brand_name"></div>
                     </div>
+                    <div class="text-sm font-bold text-orange-600"
+                        x-text="'Rp ' + formatRupiah(product.price)"></div>
+                </a>
+            </template>
 
-                    <div x-show="!loading && results.length > 0">
-                        <template x-for="product in results" :key="product.id">
-                            <a :href="'/etalase/' + product.id"
-                                class="flex items-center gap-3 p-3 hover:bg-orange-50 border-b no-underline text-dark">
-                                <img :src="product.image ? '/storage/' + product.image : '/img/no-image.png'"
-                                    class="w-12 h-12 rounded-lg object-cover bg-gray-100">
-                                <div class="flex-1">
-                                    <div class="text-sm font-bold text-gray-800" x-text="product.name"></div>
-                                    <div class="text-xs text-orange-500" x-text="product.brand_name"></div>
-                                </div>
-                                <div class="text-sm font-bold text-orange-600"
-                                    x-text="'Rp ' + formatRupiah(product.price)"></div>
-                            </a>
-                        </template>
-
-                        <div class="p-3 border-t bg-gray-50">
-                            <a :href="'/search?q=' + q"
-                                class="w-full block text-center text-sm text-orange-500 font-bold hover:underline">
-                                Lihat semua hasil →
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </form>
+            <div class="p-3 border-t bg-gray-50">
+                <a :href="'/search?q=' + q"
+                    class="w-full block text-center text-sm text-orange-500 font-bold hover:underline">
+                    Lihat semua hasil →
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
 
             {{-- CART & USER --}}
             <div class="relative flex items-center gap-4 md:gap-6">

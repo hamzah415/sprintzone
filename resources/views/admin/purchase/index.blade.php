@@ -102,7 +102,7 @@
                             @csrf @method('PUT')
                             <div class="text-xs uppercase text-gray-400 font-black mb-2">Status</div>
                             <select name="status" x-model="order.status" onchange="this.form.submit()"
-                                class="w-full border-2 border-gray-200 rounded-2xl p-4 font-bold">
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 font-bold text-sm text-left bg-white">
                                 <option value="pending">Pending</option>
                                 <option value="processing">Processing</option>
                                 <option value="success">Success</option>
@@ -119,7 +119,7 @@
                                         <div class="text-sm text-gray-500">
                                             <span x-show="item.color" x-text="item.color"></span>
                                             <span x-show="item.color && item.size"> / </span>
-                                            <span x-show="item.size" x-text="item.size"></span>
+                                            <span x-show="item.size" x-text="item.size"></span> x
                                             <span x-show="!item.color && !item.size">Qty:</span>
                                             <span x-text="item.qty"></span>
                                         </div>
