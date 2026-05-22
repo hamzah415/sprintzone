@@ -37,7 +37,7 @@ class ProductVariantController extends Controller
             return back()->with('error', 'Masukkan minimal 1 size!');
         }
 
-        // Upload image
+        // Upload image (SATU untuk semua variant dengan size berbeda)
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('variants', 'public');
@@ -62,7 +62,6 @@ class ProductVariantController extends Controller
                 'weight' => $request->weight,
                 'image' => $imagePath,
                 'created_by' => Auth::id(),
-                // updated_by = null saat create
             ]);
             $created++;
         }
@@ -87,12 +86,21 @@ class ProductVariantController extends Controller
         ]);
 
         $data = $request->except('image');
-        $data['updated_by'] = Auth::id();  // Baru diisi saat update
+        $data['updated_by'] = Auth::id();
 
+        // Handle image replacement
         if ($request->hasFile('image')) {
-            if ($variant->image && Storage::disk('public')->exists($variant->image)) {
+            // cek dulu apakah ada variant lain yang pakai image sama
+            $otherVariantsWithSameImage = ProductVariant::where('image', $variant->image)
+                ->where('id', '!=', $variant->id)
+                ->exists();
+
+            // Kalau tidak ada yang pake, baru hapus gambar lama
+            if (!$otherVariantsWithSameImage && $variant->image && Storage::disk('public')->exists($variant->image)) {
                 Storage::disk('public')->delete($variant->image);
             }
+
+            // Upload gambar baru
             $data['image'] = $request->file('image')->store('variants', 'public');
         }
 
@@ -106,12 +114,72 @@ class ProductVariantController extends Controller
      */
     public function destroy(ProductVariant $variant)
     {
-        if ($variant->image && Storage::disk('public')->exists($variant->image)) {
-            Storage::disk('public')->delete($variant->image);
+        $imagePath = $variant->image;
+
+        // CEK: Apakah ada variant lain yang menggunakan gambar yang sama?
+        $otherVariantsWithSameImage = ProductVariant::where('image', $imagePath)
+            ->where('id', '!=', $variant->id)
+            ->exists();
+
+        // Kalau TIDAK ada variant lain yang pake gambar ini, BARU hapus
+        if (!$otherVariantsWithSameImage && $imagePath && Storage::disk('public')->exists($imagePath)) {
+            Storage::disk('public')->delete($imagePath);
         }
 
         $variant->delete();
 
         return back()->with('success', 'Variant berhasil dihapus!');
+    }
+
+    /**
+     * Batch Delete Variants (MULTIPLE DELETE)
+     */
+    public function batchDelete(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (!$ids) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada variant yang dipilih!'
+            ], 400);
+        }
+
+        // Convert string ke array
+        $ids = is_array($ids) ? $ids : explode(',', $ids);
+        $ids = array_map('trim', $ids);
+
+        $variants = ProductVariant::whereIn('id', $ids)->get();
+
+        if ($variants->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Variant tidak ditemukan!'
+            ], 404);
+        }
+
+        $deleted = 0;
+        foreach ($variants as $variant) {
+            $imagePath = $variant->image;
+
+            // CEK: Apakah ada variant lain yang menggunakan gambar yang sama?
+            $otherVariantsWithSameImage = ProductVariant::where('image', $imagePath)
+                ->where('id', '!=', $variant->id)
+                ->whereNotIn('id', $ids) // Exclude yang sedang dihapus
+                ->exists();
+
+            // Kalau TIDAK ada variant lain yang pake gambar ini, BARU hapus
+            if (!$otherVariantsWithSameImage && $imagePath && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            $variant->delete();
+            $deleted++;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "$deleted variant berhasil dihapus!"
+        ]);
     }
 }

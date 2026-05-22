@@ -1,5 +1,3 @@
-{{-- resources/views/products/index.blade.php --}}
-
 @extends('layouts.admin.app')
 
 @section('content')
@@ -46,6 +44,7 @@
                 <i class="fas fa-plus-circle me-2"></i> NEW PRODUCT
             </button>
         </div>
+
 
         {{-- TABLE --}}
         <div class="card card-sprint">
@@ -124,9 +123,9 @@
 
                                     {{-- STOCK --}}
                                     <td class="px-6 py-4">
-                                        <span class="text-green-600 font-bold text-xs">
-                                            {{ $product->variants->sum('stock') }} pcs
-                                        </span>
+                                        <span
+                                            class="text-green-600 font-bold text-xs">{{ $product->variants->sum('stock') }}
+                                            pcs</span>
                                     </td>
 
                                     {{-- STATUS --}}
@@ -172,13 +171,33 @@
                                                     <p class="text-[10px] text-gray-400">Manage variations for this product
                                                     </p>
                                                 </div>
-                                                <button onclick="openVariantModal({{ $product->id }})"
-                                                    class="btn btn-sprint px-3 py-1 text-xs">+ Add</button>
+                                                <div class="flex items-center gap-2">
+                                                    {{-- SELECT ALL CHECKBOX --}}
+                                                    <label
+                                                        class="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
+                                                        <input type="checkbox"
+                                                            onchange="toggleAllVariants(this, {{ $product->id }})"
+                                                            class="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                                        <span class="font-medium">Pilih Semua</span>
+                                                    </label>
+                                                    <button onclick="openVariantModal({{ $product->id }})"
+                                                        class="btn btn-sprint px-3 py-1 text-xs">+ Add</button>
+                                                    <button type="button"
+                                                        onclick="deleteSelectedVariants({{ $product->id }})"
+                                                        class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 hidden"
+                                                        id="deleteSelectedBtn-{{ $product->id }}">
+                                                        <i class="fas fa-trash-alt mr-1"></i> Hapus Terpilih
+                                                    </button>
+                                                </div>
                                             </div>
                                             @if ($product->variants->count() > 0)
                                                 <table class="w-full text-xs">
                                                     <thead>
                                                         <tr class="border-b text-gray-400">
+                                                            <th class="py-2 text-left w-8">
+                                                                <input type="checkbox" class="variant-checkbox hidden"
+                                                                    disabled>
+                                                            </th>
                                                             <th class="py-2 text-left">Act</th>
                                                             <th class="py-2 text-left">Img</th>
                                                             <th class="py-2 text-left">Color</th>
@@ -193,7 +212,13 @@
                                                     </thead>
                                                     <tbody>
                                                         @foreach ($product->variants as $variant)
-                                                            <tr class="border-b">
+                                                            <tr class="border-b variant-row-{{ $product->id }}">
+                                                                <td class="py-2 w-8">
+                                                                    <input type="checkbox" name="variant_ids[]"
+                                                                        value="{{ $variant->id }}"
+                                                                        class="variant-checkbox w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                                                        onchange="updateDeleteButton({{ $product->id }})">
+                                                                </td>
                                                                 <td class="py-2">
                                                                     <div class="flex items-center gap-1">
                                                                         <button
@@ -488,6 +513,70 @@
             document.getElementById('arrow-' + id).classList.toggle('rotate-180');
         }
 
+        // Toggle All Variants (Select All)
+        function toggleAllVariants(checkbox, productId) {
+            const checkboxes = document.querySelectorAll('.variant-row-' + productId + ' .variant-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+            });
+            updateDeleteButton(productId);
+        }
+
+        // Update Delete Button (Show/Hide based on selection)
+        function updateDeleteButton(productId) {
+            const checkboxes = document.querySelectorAll('.variant-row-' + productId + ' .variant-checkbox');
+            const deleteBtn = document.getElementById('deleteSelectedBtn-' + productId);
+            let checkedCount = 0;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) checkedCount++;
+            });
+
+            if (checkedCount > 0) {
+                deleteBtn.classList.remove('hidden');
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Hapus Terpilih (' + checkedCount + ')';
+            } else {
+                deleteBtn.classList.add('hidden');
+            }
+        }
+
+        // Delete Selected Variants
+        function deleteSelectedVariants(productId) {
+            const checkboxes = document.querySelectorAll('.variant-row-' + productId + ' .variant-checkbox:checked');
+
+            if (checkboxes.length === 0) {
+                alert('Pilih setidaknya 1 variant untuk dihapus!');
+                return;
+            }
+
+            const variantIds = Array.from(checkboxes).map(cb => cb.value);
+
+            if (confirm('Yakin ingin menghapus ' + variantIds.length + ' variant yang dipilih?')) {
+                fetch('{{ route('variants.batchDelete') }}', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            ids: variantIds
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Terjadi kesalahan!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat menghapus!');
+                    });
+            }
+        }
+
         // Product Modal
         function openProductModal(mode, data = null) {
             const modal = document.getElementById('productModal');
@@ -522,7 +611,7 @@
             modal.classList.remove('flex');
         }
 
-        // Update Size Buttons Style
+        // Update Size Buttons Style (untuk Create Mode - multi select)
         function updateSizeButtons() {
             const input = document.getElementById('variant_sizes');
             const selected = input.value === '' ? [] : input.value.split(',').map(s => s.trim()).filter(s => s !== '');
@@ -539,8 +628,11 @@
             });
         }
 
-        // Toggle Size
+        // Toggle Size (untuk Create Mode)
         function toggleSize(size) {
+            // Jangan berfungsi jika dalam mode edit
+            if (document.getElementById('variant_sizes_manual').disabled) return;
+
             const input = document.getElementById('variant_sizes');
             const manualInput = document.getElementById('variant_sizes_manual');
             let current = input.value === '' ? [] : input.value.split(',').map(s => s.trim()).filter(s => s !== '');
@@ -569,6 +661,7 @@
         function openVariantModal(productId) {
             const modal = document.getElementById('variantModal');
             const form = document.getElementById('variantForm');
+            const sizeContainer = document.getElementById('sizeContainer');
 
             document.getElementById('variantModalTitle').textContent = 'Add Variant';
             document.getElementById('variant_product_id').value = productId;
@@ -579,16 +672,20 @@
             document.getElementById('variant_color').value = '';
             document.getElementById('variant_sizes').value = '';
             document.getElementById('variant_sizes_manual').value = '';
+            document.getElementById('variant_sizes_manual').disabled = false;
+            document.getElementById('variant_sizes_manual').placeholder = 'Atau ketik: 36, 37, 38';
             document.getElementById('variant_sku').value = '';
             document.getElementById('variant_stock').value = '10';
             document.getElementById('variant_price').value = '';
             document.getElementById('variant_discount_price').value = '';
             document.getElementById('colorPicker').value = '#000000';
 
-            // Reset buttons
+            // Reset buttons - enable all untuk create mode
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.classList.remove('bg-orange-600', 'border-orange-600', 'text-white');
                 btn.classList.add('border-gray-200', 'text-gray-600', 'bg-white');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
             });
 
             modal.classList.remove('hidden');
@@ -599,6 +696,8 @@
         function openVariantEditModal(variant) {
             const modal = document.getElementById('variantModal');
             const form = document.getElementById('variantForm');
+            const sizeContainer = document.getElementById('sizeContainer');
+            const manualInput = document.getElementById('variant_sizes_manual');
 
             document.getElementById('variantModalTitle').textContent = 'Edit Variant';
             form.action = '/variants/' + variant.id;
@@ -607,19 +706,37 @@
             document.getElementById('variant_product_id').value = variant.product_id;
             document.getElementById('variant_color').value = variant.color || '';
             document.getElementById('variant_sizes').value = variant.size || '';
-            document.getElementById('variant_sizes_manual').value = variant.size || '';
+
+            // Set manual input untuk edit mode ( Readonly, hanya 1 size)
+            manualInput.value = variant.size || '';
+            manualInput.disabled = true; // Disable karena edit hanya bisa 1 size
+            manualInput.placeholder = 'Size: ' + (variant.size || '-');
+
             document.getElementById('variant_sku').value = variant.sku || '';
             document.getElementById('variant_stock').value = variant.stock || '10';
             document.getElementById('variant_price').value = variant.price || '';
             document.getElementById('variant_discount_price').value = variant.discount_price || '';
 
-            // Update buttons
-            updateSizeButtons();
+            // Update buttons - Pilih HANYA size variant yang diedit
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                const size = btn.dataset.size;
+                if (size === variant.size) {
+                    btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-white');
+                    btn.classList.add('bg-orange-600', 'border-orange-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-orange-600', 'border-orange-600', 'text-white');
+                    btn.classList.add('border-gray-200', 'text-gray-600', 'bg-white');
+                }
+                // Disable semua tombol size saat edit
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            });
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
 
+        // Close Variant Modal
         function closeVariantModal() {
             const modal = document.getElementById('variantModal');
             modal.classList.add('hidden');

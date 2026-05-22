@@ -224,7 +224,17 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
         // Products
         Route::resource('products', ProductController::class)->except(['show']);
 
-        Route::resource('variants', ProductVariantController::class);
+        // 1. Store - POST
+        Route::post('/variants', [ProductVariantController::class, 'store'])->name('variants.store');
+
+        // 2. Batch Delete - DELETE (HARUS di atas route {variant})
+        Route::delete('/variants/batch-delete', [ProductVariantController::class, 'batchDelete'])->name('variants.batchDelete');
+
+        // 3. Update - PUT
+        Route::put('/variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
+
+        // 4. Delete - DELETE
+        Route::delete('/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
 
         // Panel Admin
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
@@ -256,14 +266,14 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
 Route::post('/payment/success/{order}', [CheckoutController::class, 'paymentSuccess'])->name('payment.success');
 
 // routes/web.php - TAMBAHIN
-Route::get('/test-variant', function() {
+Route::get('/test-variant', function () {
     $sizesInput = '36, 37, 38';
     $sizesArray = explode(',', $sizesInput);
     $sizesArray = array_map('trim', $sizesArray);
-    $sizesArray = array_filter($sizesArray, function($v) {
+    $sizesArray = array_filter($sizesArray, function ($v) {
         return !empty($v);
     });
-    
+
     dd([
         'input' => $sizesInput,
         'parsed' => $sizesArray,
