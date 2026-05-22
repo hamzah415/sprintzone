@@ -354,71 +354,125 @@
         </div>
     </div>
 
-    {{-- VARIANT MODAL --}}
-    <div id="variantModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-sm shadow-2xl w-full max-w-lg overflow-hidden">
-            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center">
-                <h3 class="text-white font-black italic uppercase tracking-widest text-lg" id="variantModalTitle">Add
-                    Variant</h3>
+    {{-- VARIANT MODAL (SHOES STYLE) --}}
+    <div id="variantModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden relative">
+
+            {{-- HEADER --}}
+            <div class="bg-gray-900 px-6 py-5 flex justify-between items-center border-b border-gray-800">
+                <div>
+                    <h3 class="text-white font-black italic uppercase tracking-widest text-xl" id="variantModalTitle">
+                        Add Variant
+                    </h3>
+                    <p class="text-gray-400 text-xs mt-1">1 warna bisa banyak size</p>
+                </div>
                 <button onclick="closeVariantModal()"
-                    class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+                    class="text-gray-400 hover:text-white text-3xl font-bold leading-none">
+                    &times;
+                </button>
             </div>
+
             <form id="variantForm" method="POST" enctype="multipart/form-data" class="p-6">
                 @csrf
-                <div id="variantMethodField"></div>
+                <input type="hidden" name="_method" id="methodField" value="POST">
                 <input type="hidden" name="product_id" id="variant_product_id">
 
-                <div class="grid grid-cols-2 gap-4 mb-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {{-- KIRI: WARNA & GAMBAR --}}
                     <div>
-                        <label
-                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Color</label>
-                        <input type="text" name="color" id="variant_color"
-                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3" required>
+                        {{-- COLOR --}}
+                        <div class="mb-0">
+                            <label
+                                class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Warna</label>
+                            <div class="flex gap-2">
+                                <input type="text" name="color" id="variant_color" placeholder="contoh: Hitam"
+                                    class="flex-1 border-2 border-gray-200 rounded-lg text-sm font-bold p-3 focus:border-orange-500 outline-none"
+                                    required>
+                                <input type="color" id="colorPicker"
+                                    class="w-14 h-12 border-2 border-gray-200 rounded-lg cursor-pointer bg-white"
+                                    value="#000000"
+                                    onchange="document.getElementById('variant_color').value = this.value">
+                            </div>
+                        </div>
+
+                        {{-- IMAGE --}}
+                        <div class="mt-4">
+                            <label
+                                class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Gambar</label>
+                            <input type="file" name="image"
+                                class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
+                        </div>
+
+                        {{-- SKU --}}
+                        <div class="mt-4">
+                            <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">SKU
+                                (Opsional)</label>
+                            <input type="text" name="sku" id="variant_sku" placeholder="Auto-generate"
+                                class="w-full border-2 border-gray-200 rounded-lg text-sm p-3 focus:border-orange-500 outline-none">
+                        </div>
                     </div>
+
+                    {{-- KANAN: UKURAN & HARGA --}}
                     <div>
-                        <label
-                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Size</label>
-                        <input type="text" name="size" id="variant_size"
-                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3" required>
+                        {{-- SIZE BUTTONS (HORIZONTAL) --}}
+                        <div class="mb-4">
+                            <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih
+                                Sizes</label>
+                            <div class="flex gap-2 overflow-x-auto pb-2 mb-2" id="sizeContainer">
+                                @foreach (['36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'] as $size)
+                                    <button type="button" onclick="toggleSize('{{ $size }}')"
+                                        data-size="{{ $size }}"
+                                        class="size-btn flex-shrink-0 w-12 h-10 border-2 border-gray-200 rounded-lg text-xs font-bold transition hover:border-orange-500">
+                                        {{ $size }}
+                                    </button>
+                                @endforeach
+                            </div>
+                            <input type="hidden" name="sizes" id="variant_sizes" value="">
+                            <input type="text" id="variant_sizes_manual" placeholder="Atau ketik ukuran lain: 47, 48"
+                                class="w-full border-2 border-gray-200 rounded-lg text-sm p-2 focus:border-orange-500 outline-none"
+                                oninput="document.getElementById('variant_sizes').value = this.value">
+                        </div>
+
+                        {{-- PRICE & DISCOUNT --}}
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Harga</label>
+                                <input type="number" name="price" id="variant_price" placeholder="150000"
+                                    class="w-full border-2 border-gray-200 rounded-lg text-sm p-3 focus:border-orange-500 outline-none"
+                                    required>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Diskon</label>
+                                <input type="number" name="discount_price" id="variant_discount_price"
+                                    placeholder="Opsional"
+                                    class="w-full border-2 border-gray-200 rounded-lg text-sm p-3 focus:border-orange-500 outline-none">
+                            </div>
+                        </div>
+
+                        {{-- STOCK --}}
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Stock per
+                                Size</label>
+                            <input type="number" name="stock" id="variant_stock" value="10"
+                                class="w-full border-2 border-gray-200 rounded-lg text-sm p-3 focus:border-orange-500 outline-none">
+                        </div>
                     </div>
-                    <div>
-                        <label
-                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">SKU</label>
-                        <input type="text" name="sku" id="variant_sku"
-                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
-                    </div>
-                    <div>
-                        <label
-                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Stock</label>
-                        <input type="number" name="stock" id="variant_stock"
-                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
-                    </div>
-                    <div>
-                        <label
-                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Price</label>
-                        <input type="number" name="price" id="variant_price"
-                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
-                    </div>
-                    <div>
-                        <label
-                            class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Discount</label>
-                        <input type="number" name="discount_price" id="variant_discount_price"
-                            class="w-full border-gray-200 border-2 rounded-sm text-sm font-bold p-3">
-                    </div>
+
                 </div>
 
-                <div class="mb-5">
-                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Image</label>
-                    <input type="file" name="image"
-                        class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-xs file:font-black file:bg-gray-900 file:text-white hover:file:bg-gray-700 cursor:pointer">
-                </div>
-
-                <div class="flex justify-end gap-3 mt-8">
+                {{-- BUTTONS --}}
+                <div class="flex justify-between gap-3 pt-6 mt-2 border-t border-gray-100">
                     <button type="button" onclick="closeVariantModal()"
-                        class="px-6 py-2 text-xs font-black uppercase tracking-widest text-gray-400">Cancel</button>
+                        class="flex-1 py-3 text-xs font-black uppercase tracking-widest text-gray-400 border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-600 transition">
+                        Batal
+                    </button>
                     <button type="submit"
-                        class="px-8 py-2 bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-sm hover:bg-orange-700 shadow-md">Save
-                        Data</button>
+                        class="flex-1 py-3 bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-lg hover:bg-orange-700 shadow-lg transition">
+                        Simpan
+                    </button>
                 </div>
             </form>
         </div>
@@ -434,7 +488,7 @@
             document.getElementById('arrow-' + id).classList.toggle('rotate-180');
         }
 
-        // Product Modal - yang sudah diperbaiki
+        // Product Modal
         function openProductModal(mode, data = null) {
             const modal = document.getElementById('productModal');
             const form = document.getElementById('productForm');
@@ -445,13 +499,7 @@
                 title.textContent = 'New Product';
                 form.action = '{{ route('products.store') }}';
                 methodField.value = 'POST';
-
-                // Reset semua field
-                document.getElementById('productName').value = '';
-                document.getElementById('productCategory').value = '';
-                document.getElementById('productBrand').value = '';
-                document.getElementById('productStatus').value = 'active';
-                document.getElementById('productDesc').value = '';
+                form.reset();
             } else {
                 title.textContent = 'Edit Product';
                 form.action = '/products/' + data.id;
@@ -465,13 +513,59 @@
             }
 
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeProductModal() {
-            document.getElementById('productModal').classList.add('hidden');
+            const modal = document.getElementById('productModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
-        // Variant Modal
+        // Update Size Buttons Style
+        function updateSizeButtons() {
+            const input = document.getElementById('variant_sizes');
+            const selected = input.value === '' ? [] : input.value.split(',').map(s => s.trim()).filter(s => s !== '');
+
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                const size = btn.dataset.size;
+                if (selected.includes(size)) {
+                    btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-white');
+                    btn.classList.add('bg-orange-600', 'border-orange-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-orange-600', 'border-orange-600', 'text-white');
+                    btn.classList.add('border-gray-200', 'text-gray-600', 'bg-white');
+                }
+            });
+        }
+
+        // Toggle Size
+        function toggleSize(size) {
+            const input = document.getElementById('variant_sizes');
+            const manualInput = document.getElementById('variant_sizes_manual');
+            let current = input.value === '' ? [] : input.value.split(',').map(s => s.trim()).filter(s => s !== '');
+
+            if (current.includes(size)) {
+                current = current.filter(s => s !== size);
+            } else {
+                current.push(size);
+            }
+
+            current.sort((a, b) => parseInt(a) - parseInt(b));
+
+            const newValue = current.join(', ');
+            input.value = newValue;
+            manualInput.value = newValue;
+
+            updateSizeButtons();
+        }
+
+        // Add Size (alias)
+        function addSize(size) {
+            toggleSize(size);
+        }
+
+        // Variant Modal - CREATE
         function openVariantModal(productId) {
             const modal = document.getElementById('variantModal');
             const form = document.getElementById('variantForm');
@@ -479,44 +573,97 @@
             document.getElementById('variantModalTitle').textContent = 'Add Variant';
             document.getElementById('variant_product_id').value = productId;
             form.action = '{{ route('variants.store') }}';
-            document.getElementById('variantMethodField').innerHTML = '@csrf';
+            document.getElementById('methodField').value = 'POST';
 
-            form.reset();
+            // Reset all fields
+            document.getElementById('variant_color').value = '';
+            document.getElementById('variant_sizes').value = '';
+            document.getElementById('variant_sizes_manual').value = '';
+            document.getElementById('variant_sku').value = '';
+            document.getElementById('variant_stock').value = '10';
+            document.getElementById('variant_price').value = '';
+            document.getElementById('variant_discount_price').value = '';
+            document.getElementById('colorPicker').value = '#000000';
+
+            // Reset buttons
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('bg-orange-600', 'border-orange-600', 'text-white');
+                btn.classList.add('border-gray-200', 'text-gray-600', 'bg-white');
+            });
+
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
+        // Variant Modal - EDIT
         function openVariantEditModal(variant) {
             const modal = document.getElementById('variantModal');
             const form = document.getElementById('variantForm');
 
             document.getElementById('variantModalTitle').textContent = 'Edit Variant';
             form.action = '/variants/' + variant.id;
-            document.getElementById('variantMethodField').innerHTML = '@csrf @method('PUT')';
+            document.getElementById('methodField').value = 'PUT';
 
             document.getElementById('variant_product_id').value = variant.product_id;
-            document.getElementById('variant_color').value = variant.color;
-            document.getElementById('variant_size').value = variant.size;
+            document.getElementById('variant_color').value = variant.color || '';
+            document.getElementById('variant_sizes').value = variant.size || '';
+            document.getElementById('variant_sizes_manual').value = variant.size || '';
             document.getElementById('variant_sku').value = variant.sku || '';
-            document.getElementById('variant_stock').value = variant.stock;
-            document.getElementById('variant_price').value = variant.price;
+            document.getElementById('variant_stock').value = variant.stock || '10';
+            document.getElementById('variant_price').value = variant.price || '';
             document.getElementById('variant_discount_price').value = variant.discount_price || '';
 
+            // Update buttons
+            updateSizeButtons();
+
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeVariantModal() {
-            document.getElementById('variantModal').classList.add('hidden');
+            const modal = document.getElementById('variantModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
-        // Delete Modal (gunakan komponen delete-modal)
-        // function openDeleteModal ada di components/delete-modal.blade.php
+        // Delete Modal
+        function openDeleteModal(url) {
+            const modal = document.getElementById('deleteModal');
+            const form = document.getElementById('deleteForm');
+
+            if (form) form.action = url;
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
 
         // Close on Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeProductModal();
                 closeVariantModal();
+                closeDeleteModal();
             }
+        });
+
+        // Click outside to close
+        document.addEventListener('click', function(e) {
+            const productModal = document.getElementById('productModal');
+            const variantModal = document.getElementById('variantModal');
+            const deleteModal = document.getElementById('deleteModal');
+
+            if (e.target === productModal) closeProductModal();
+            if (e.target === variantModal) closeVariantModal();
+            if (e.target === deleteModal) closeDeleteModal();
         });
     </script>
 @endsection

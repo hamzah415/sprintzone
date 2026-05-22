@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Auth;
 class ProductVariantController extends Controller
 {
     /**
-     * Store Variant
+     * Store Variant (Multiple Sizes)
      */
     public function store(Request $request)
     {
         $request->validate([
             'product_id'      => 'required|exists:products,id',
             'color'           => 'nullable|string|max:100',
-            'size'            => 'nullable|string|max:50',
+            'sizes'           => 'required|string|max:255',
             'sku'             => 'nullable|string|max:255',
             'price'           => 'required|numeric',
             'discount_price'  => 'nullable|numeric',
@@ -27,40 +27,56 @@ class ProductVariantController extends Controller
             'image'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $data = $request->except('image');
+        $product = Product::find($request->product_id);
 
-        /**
-         * Tambahkan created_by
-         */
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
+        // Parse sizes (pisahkan dengan koma)
+        $sizes = array_map('trim', explode(',', strtoupper($request->sizes)));
+        $sizes = array_filter($sizes); // Hapus yang kosong
 
-        /**
-         * Upload image
-         */
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')
-                ->store('variants', 'public');
+        if (empty($sizes)) {
+            return back()->with('error', 'Masukkan minimal 1 size!');
         }
 
-        /**
-         * Create variant
-         */
-        ProductVariant::create($data);
+        // Upload image sekali saja
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('variants', 'public');
+        }
 
-        return back()->with(
-            'success',
-            'Product variant created successfully.'
-        );
+        // Generate SKU base
+        $skuBase = $request->sku ?? strtoupper(substr($request->color ?? 'CL', 0, 3)) . '-' . strtoupper(substr($product->name ?? 'PRD', 0, 3));
+
+        // Create variant untuk setiap size
+        $created = 0;
+        foreach ($sizes as $index => $size) {
+            // Generate unique SKU
+            $sku = $skuBase . '-' . $size . '-' . ($index + 1);
+
+            ProductVariant::create([
+                'product_id' => $request->product_id,
+                'color' => strtoupper($request->color),
+                'size' => $size,
+                'sku' => $sku,
+                'price' => $request->price,
+                'discount_price' => $request->discount_price,
+                'stock' => $request->stock,
+                'weight' => $request->weight,
+                'image' => $imagePath,
+                'created_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+            $created++;
+        }
+
+        return back()->with('success', "$created variant berhasil dibuat!");
     }
 
     /**
-     * Update Variant
+     * Update Variant (Single)
      */
     public function update(Request $request, ProductVariant $variant)
     {
         $request->validate([
-            'product_id'      => 'required|exists:products,id',
             'color'           => 'nullable|string|max:100',
             'size'            => 'nullable|string|max:50',
             'sku'             => 'nullable|string|max:255',
@@ -72,41 +88,19 @@ class ProductVariantController extends Controller
         ]);
 
         $data = $request->except('image');
-
-        /**
-         * Tambahkan updated_by
-         */
         $data['updated_by'] = Auth::id();
 
-        /**
-         * Upload new image
-         */
+        // Upload new image
         if ($request->hasFile('image')) {
-            /**
-             * Delete old image
-             */
-            if ($variant->image &&
-                Storage::disk('public')->exists($variant->image)) {
-                Storage::disk('public')
-                    ->delete($variant->image);
+            if ($variant->image && Storage::disk('public')->exists($variant->image)) {
+                Storage::disk('public')->delete($variant->image);
             }
-
-            /**
-             * Store new image
-             */
-            $data['image'] = $request->file('image')
-                ->store('variants', 'public');
+            $data['image'] = $request->file('image')->store('variants', 'public');
         }
 
-        /**
-         * Update variant
-         */
         $variant->update($data);
 
-        return back()->with(
-            'success',
-            'Product variant updated successfully.'
-        );
+        return back()->with('success', 'Variant berhasil diupdate!');
     }
 
     /**
@@ -114,23 +108,12 @@ class ProductVariantController extends Controller
      */
     public function destroy(ProductVariant $variant)
     {
-        /**
-         * Delete image
-         */
-        if ($variant->image &&
-            Storage::disk('public')->exists($variant->image)) {
-            Storage::disk('public')
-                ->delete($variant->image);
+        if ($variant->image && Storage::disk('public')->exists($variant->image)) {
+            Storage::disk('public')->delete($variant->image);
         }
 
-        /**
-         * Delete variant
-         */
         $variant->delete();
 
-        return back()->with(
-            'success',
-            'Product variant deleted successfully.'
-        );
+        return back()->with('success', 'Variant berhasil dihapus!');
     }
 }

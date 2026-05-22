@@ -19,7 +19,6 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductVariantController;
-use App\Http\Controllers\ProductVariantSizeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,9 +185,6 @@ Route::middleware(['auth'])->group(function () {
     // Purchase History
     Route::get('/My-Order', [CheckoutController::class, 'myorder'])->name('myorder.index');
 
-    // size varian
-    Route::resource('variant-sizes', ProductVariantSizeController::class);
-
     // Logout
     Route::post('/logout', function () {
         auth()->logout();
@@ -258,3 +254,19 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
 // =========================================================== // 6. PAYMENT CALLBACK (Tanpa Middleware - Webhook) // ===========================================================
 
 Route::post('/payment/success/{order}', [CheckoutController::class, 'paymentSuccess'])->name('payment.success');
+
+// routes/web.php - TAMBAHIN
+Route::get('/test-variant', function() {
+    $sizesInput = '36, 37, 38';
+    $sizesArray = explode(',', $sizesInput);
+    $sizesArray = array_map('trim', $sizesArray);
+    $sizesArray = array_filter($sizesArray, function($v) {
+        return !empty($v);
+    });
+    
+    dd([
+        'input' => $sizesInput,
+        'parsed' => $sizesArray,
+        'count' => count($sizesArray)
+    ]);
+});

@@ -26,11 +26,6 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function sizes(): HasMany
-    {
-        return $this->hasMany(ProductVariantSize::class, 'variant_id');
-    }
-
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
