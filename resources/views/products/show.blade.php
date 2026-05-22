@@ -293,7 +293,7 @@
                         </div>
                     @endif
 
-                    {{-- QTY --}}
+                    {{-- PRODUCT DETAIL - QTY SECTION --}}
                     @auth
                         <div class="flex items-center gap-4 py-5 border-y">
                             <span class="text-sm text-gray-700">Jumlah</span>

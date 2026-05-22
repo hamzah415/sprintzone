@@ -235,9 +235,7 @@
         </div>
     </div>
 
-    {{-- SCRIPT --}}
     <script>
-        // Simpan semua variants
         const allProductVariants = {};
 
         @foreach ($products ?? [] as $product)
@@ -270,13 +268,15 @@
             selectedSize = null;
             selectedVariant = null;
 
-            // Render colors
+            // Reset qty
+            document.getElementById('modalQtyInput').value = 1;
+            document.getElementById('variantQty').value = 1;
+
             const uniqueColors = [...new Set(currentVariants.map(v => v.color))];
             document.getElementById('colorOptions').innerHTML = uniqueColors.map(color =>
                 `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-color="${color}">${color}</button>`
             ).join('');
 
-            // Render sizes
             const uniqueSizes = [...new Set(currentVariants.map(v => v.size))];
             document.getElementById('sizeOptions').innerHTML = uniqueSizes.map(size =>
                 `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-size="${size}">${size}</button>`
@@ -284,11 +284,9 @@
 
             document.getElementById('variantInfo').classList.add('hidden');
             document.getElementById('addToCartBtn').disabled = true;
-            document.getElementById('modalQtyInput').value = 1;
             document.getElementById('variantModal').classList.remove('hidden');
             document.getElementById('variantModal').classList.add('flex');
 
-            // Add events
             document.querySelectorAll('#colorOptions .variant-btn').forEach(btn => {
                 btn.onclick = function() {
                     document.querySelectorAll('#colorOptions .variant-btn').forEach(b => b.classList.remove(
@@ -311,24 +309,19 @@
         }
 
         function directAddToCart(productId) {
-            fetch('/cart/' + productId, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert(data.message || 'Error');
-                    }
-                })
-                .catch(error => {
-                    window.location.href = '/cart/' + productId;
-                });
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/cart/' + productId;
+            form.style.display = 'none';
+
+            var token = document.createElement('input');
+            token.type = 'hidden';
+            token.name = '_token';
+            token.value = '{{ csrf_token() }}';
+
+            form.appendChild(token);
+            document.body.appendChild(form);
+            form.submit();
         }
 
         function findModalVariant() {
@@ -352,6 +345,11 @@
                 document.getElementById('modalPrice').innerText = 'Rp ' + Number(price).toLocaleString('id-ID');
                 document.getElementById('selectedVariantId').value = selectedVariant.id;
                 document.getElementById('modalQtyInput').max = selectedVariant.stock;
+
+                // RESET QTY ke 1 saat variant berubah
+                document.getElementById('modalQtyInput').value = 1;
+                document.getElementById('variantQty').value = 1;
+
                 document.getElementById('addToCartBtn').disabled = false;
             } else {
                 document.getElementById('variantInfo').classList.add('hidden');
@@ -369,6 +367,7 @@
             const max = parseInt(input.max) || 1;
             if (parseInt(input.value) < max) {
                 input.value = parseInt(input.value) + 1;
+                document.getElementById('variantQty').value = input.value; // UPDATE HIDDEN
             }
         }
 
@@ -376,6 +375,7 @@
             const input = document.getElementById('modalQtyInput');
             if (parseInt(input.value) > 1) {
                 input.value = parseInt(input.value) - 1;
+                document.getElementById('variantQty').value = input.value; // UPDATE HIDDEN
             }
         }
 
