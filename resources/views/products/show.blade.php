@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', $product->name)
+
 @section('content')
 
     <style>
@@ -47,9 +49,7 @@
             display: none;
         }
     </style>
-
     <div class="min-h-screen bg-white">
-
         {{-- BREADCRUMB --}}
         <div class="max-w-6xl mx-auto px-6 py-6">
             <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -67,15 +67,11 @@
 
         {{-- PRODUCT DETAIL --}}
         <div class="max-w-6xl mx-auto px-6 pb-16">
-
             <div class="grid md:grid-cols-2 gap-14">
-
                 {{-- LEFT --}}
                 <div class="space-y-5">
-
                     {{-- MAIN IMAGE --}}
                     <div class="bg-gray-100 rounded-2xl overflow-hidden relative">
-
                         @php
                             $mainImage = $product->image;
                             if (!$mainImage && $product->variants->isNotEmpty()) {
@@ -338,35 +334,15 @@
                         @endauth
                     </div>
 
-                    {{-- PRODUCT INFO --}}
-                    <div class="bg-gray-50 rounded-2xl p-5 space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Berat</span>
-                            <span class="font-medium">{{ $product->weight ?? 0 }} gram</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Kategori</span>
-                            <span class="font-medium">{{ $product->category->name ?? '-' }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Kondisi</span>
-                            <span class="font-medium">{{ $product->condition == 'new' ? 'Baru' : 'Bekas' }}</span>
-                        </div>
-                    </div>
-
                     {{-- BACK --}}
                     <div>
                         <a href="{{ route('products.etalase') }}" class="text-orange-600 hover:underline text-sm">
                             ← Kembali ke Etalase
                         </a>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     {{-- SCRIPT --}}
