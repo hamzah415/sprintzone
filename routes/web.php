@@ -70,15 +70,15 @@ Route::get('/etalase', function () {
 
     // Sort
     $sort = request('sort', 'latest');
+
     if ($sort == 'price_low') {
-        $query->orderBy('price', 'asc');
+        $query->withMin('variants', 'price')->orderBy('variants_min_price', 'asc');
     } elseif ($sort == 'price_high') {
-        $query->orderBy('price', 'desc');
+        $query->withMax('variants', 'price')->orderBy('variants_max_price', 'desc');
     } else {
         $query->latest();
     }
 
-    // Paginate (12 items per page)
     $products = $query->paginate(12);
 
     return view('products.etalase', compact('products'));
