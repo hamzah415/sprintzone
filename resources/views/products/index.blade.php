@@ -317,7 +317,7 @@
             <form id="productForm" method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data"
                 class="p-6">
                 @csrf
-                <input type="hidden" id="formMethod" value="POST">
+                <input type="hidden" id="formMethod" name="_method" value="POST">
 
                 <div class="mb-5">
                     <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2">Product
@@ -591,7 +591,7 @@
                 form.reset();
             } else {
                 title.textContent = 'Edit Product';
-                form.action = '/products/' + data.id;
+                form.action = '{{ url('products') }}/' + data.id;
                 methodField.value = 'PUT';
 
                 document.getElementById('productName').value = data.name;
