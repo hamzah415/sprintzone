@@ -1,8 +1,7 @@
 <?php
 
-use App\Providers\AppServiceProvider;
-
 return [
     App\Providers\AppServiceProvider::class,
-	PragmaRX\Google2FALaravel\ServiceProvider::class,
+    App\Providers\PdfServiceProvider::class,
+    PragmaRX\Google2FALaravel\ServiceProvider::class,
 ];

@@ -7,9 +7,10 @@
                 LAPORAN <span class="text-orange-500">STOK</span>
             </h2>
 
+            {{-- Di laporan.stok.index --}}
             <a href="{{ route('laporan.stok.export') }}"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg text-xs font-black uppercase">
-                <i class="fas fa-download mr-1"></i> EXPORT CSV
+                class="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-black uppercase">
+                <i class="fas fa-file-pdf mr-1"></i> EXPORT PDF
             </a>
         </div>
 

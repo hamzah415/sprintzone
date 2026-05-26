@@ -30,9 +30,10 @@
             </a>
 
             {{-- EXPORT BUTTON --}}
+            
             <a href="{{ route('laporan.penjualan.export', ['filter' => $filter]) }}"
-                class="ml-auto px-4 py-2 bg-green-600 text-white rounded-lg text-xs font-black uppercase">
-                <i class="fas fa-download mr-1"></i> EXPORT CSV
+                class="ml-auto px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-black uppercase">
+                <i class="fas fa-file-pdf mr-1"></i> EXPORT PDF
             </a>
         </div>
 
