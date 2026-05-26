@@ -36,8 +36,8 @@
             </a>
         </div>
 
-        {{-- STATS --}}
-        <div class="grid grid-cols-3 gap-4 mb-4">
+        {{-- STATS DENGAN PROFIT --}}
+        <div class="grid grid-cols-4 gap-4 mb-4">
             <div class="bg-blue-500 text-white p-4 rounded-lg">
                 <p class="text-xs uppercase">Total Order</p>
                 <p class="text-2xl font-black">{{ $totalOrder ?? 0 }}</p>
@@ -46,9 +46,23 @@
                 <p class="text-xs uppercase">Pendapatan</p>
                 <p class="text-2xl font-black">Rp {{ number_format($totalPendapatan ?? 0, 0, ',', '.') }}</p>
             </div>
-            <div class="bg-orange-500 text-white p-4 rounded-lg">
-                <p class="text-xs uppercase">Items Terjual</p>
-                <p class="text-2xl font-black">{{ $totalQuantity ?? 0 }}</p>
+            <div class="bg-red-500 text-white p-4 rounded-lg">
+                <p class="text-xs uppercase">Est. Modal</p>
+                <p class="text-2xl font-black">Rp {{ number_format(($totalPendapatan ?? 0) * 0.8, 0, ',', '.') }}</p>
+                <p class="text-[10px] opacity-70">~80% estimasi</p>
+            </div>
+            <div class="bg-orange-500 text-white p-4 rounded-lg shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase">Est. Profit</p>
+                        <p class="text-2xl font-black">Rp {{ number_format(($totalPendapatan ?? 0) * 0.2, 0, ',', '.') }}
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <p class="text-[10px] opacity-70">~20% estimasi</p>
             </div>
         </div>
 

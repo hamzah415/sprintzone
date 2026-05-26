@@ -28,4 +28,14 @@ class Brand extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+    
+    public function getImageAttribute()
+    {
+        return $this->images()->first()?->image_path;
+    }
 }

@@ -25,7 +25,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    
+
     protected function casts(): array
     {
         return [
@@ -42,5 +42,10 @@ class User extends Authenticatable
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

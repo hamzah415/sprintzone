@@ -13,7 +13,7 @@ class SalesReportController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = $request->filter ?? 'today';
+        $filter = $request->filter ?? 'all';
         
         $query = Order::with(['user', 'items.variant.product', 'items.variant']);
         

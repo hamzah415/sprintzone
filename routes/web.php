@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\URegisterController;
 use App\Http\Controllers\Auth\RecoveryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\BrandCategoryReportController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
@@ -271,8 +272,8 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
         Route::get('/laporan/user', [UserReportController::class, 'index'])->name('laporan.user');
         Route::get('/laporan/user/export', [UserReportController::class, 'export'])->name('laporan.user.export');
 
-        Route::get('/laporan/kategori', [CategoryReportController::class, 'index'])->name('laporan.kategori');
-        Route::get('/laporan/kategori/export', [CategoryReportController::class, 'export'])->name('laporan.kategori.export');
+        Route::get('/laporan/brand-kategori', [BrandCategoryReportController::class, 'index'])->name('laporan.brand-kategori');
+        Route::get('/laporan/brand-kategori/export', [BrandCategoryReportController::class, 'export'])->name('laporan.brand-kategori.export');
     });
 
     // Transaction (Admin bisa melihat history juga)

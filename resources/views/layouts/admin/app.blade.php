@@ -241,7 +241,19 @@
                                 <i class="fas fa-box w-6"></i> Laporan Stok
                             </a>
 
+                            {{-- LAPORAN BRAND --}}
+                            <a href="{{ route('laporan.brand-kategori') }}"
+                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                <i class="fas fa-tags w-6"></i> Laporan Brand
+                            </a>
+
                             <div class="border-t border-gray-100 my-1"></div>
+
+                            {{-- USER MANAGEMENT --}}
+                            <a href="{{ route('laporan.user') }}"
+                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                <i class="fas fa-users w-6"></i> User Report
+                            </a>
 
                             {{-- PURCHASE HISTORY (MANAGE ORDER) --}}
                             <a href="{{ route('purchase.history') }}"
