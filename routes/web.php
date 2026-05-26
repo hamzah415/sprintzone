@@ -19,6 +19,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductVariantController;
+use App\Http\Controllers\SalesReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -255,6 +256,11 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
         Route::get('/purchase-history', [PurchaseController::class, 'index'])->name('purchase.history');
         Route::get('/purchase-history/{order}', [PurchaseController::class, 'show'])->name('purchase.show');
         Route::put('/purchase-history/{order}/status', [PurchaseController::class, 'updateStatus'])->name('purchase.status');
+
+        // Report 
+        Route::get('/laporan/penjualan', [SalesReportController::class, 'index'])->name('laporan.penjualan');
+        Route::post('/laporan/penjualan', [SalesReportController::class, 'report'])->name('laporan.penjualan.report');
+        Route::get('/laporan/penjualan/export', [SalesReportController::class, 'export'])->name('laporan.penjualan.export');
     });
 
     // Transaction (Admin bisa melihat history juga)

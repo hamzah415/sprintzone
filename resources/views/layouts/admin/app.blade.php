@@ -234,9 +234,10 @@
                                 </a>
                                 <div
                                     class="side-menu absolute left-full top-0 ml-0 w-40 bg-white border border-gray-200 shadow-xl rounded-lg py-2">
-                                    <a href="#"
-                                        class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">Sales
-                                        History</a>
+                                    <a href="{{ route('laporan.penjualan') }}"
+                                        class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                        Laporan Penjualan
+                                    </a>
                                     <a href="{{ route('purchase.history') }}"
                                         class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">Purchase
                                         History</a>
