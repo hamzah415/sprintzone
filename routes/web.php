@@ -15,11 +15,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryReportController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\SalesReportController;
+use App\Http\Controllers\StockReportController;
+use App\Http\Controllers\UserReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -261,6 +264,15 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
         Route::get('/laporan/penjualan', [SalesReportController::class, 'index'])->name('laporan.penjualan');
         Route::post('/laporan/penjualan', [SalesReportController::class, 'report'])->name('laporan.penjualan.report');
         Route::get('/laporan/penjualan/export', [SalesReportController::class, 'export'])->name('laporan.penjualan.export');
+
+        Route::get('/laporan/stok', [StockReportController::class, 'index'])->name('laporan.stok');
+        Route::get('/laporan/stok/export', [StockReportController::class, 'export'])->name('laporan.stok.export');
+
+        Route::get('/laporan/user', [UserReportController::class, 'index'])->name('laporan.user');
+        Route::get('/laporan/user/export', [UserReportController::class, 'export'])->name('laporan.user.export');
+
+        Route::get('/laporan/kategori', [CategoryReportController::class, 'index'])->name('laporan.kategori');
+        Route::get('/laporan/kategori/export', [CategoryReportController::class, 'export'])->name('laporan.kategori.export');
     });
 
     // Transaction (Admin bisa melihat history juga)

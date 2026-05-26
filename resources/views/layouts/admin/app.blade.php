@@ -219,30 +219,36 @@
                             </svg>
                         </button>
                         <div x-show="open" x-cloak x-transition
-                            class="absolute left-0 mt-3 w-48 bg-white border border-gray-200 shadow-xl rounded-lg py-2 z-[100]">
+                            class="absolute left-0 mt-3 w-56 bg-white border border-gray-200 shadow-xl rounded-lg py-2 z-[100]">
+
+                            {{-- DASHBOARD --}}
                             <a href="{{ route('dashboard') }}"
-                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">Dashboard</a>
+                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                <i class="fas fa-home w-6"></i> Dashboard
+                            </a>
+
                             <div class="border-t border-gray-100 my-1"></div>
-                            <div class="dropdown-submenu">
-                                <a
-                                    class="flex items-center justify-between px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition cursor-pointer decoration-none text-gray-600">
-                                    HISTORY <svg class="w-2 h-2 -rotate-90" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                            d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </a>
-                                <div
-                                    class="side-menu absolute left-full top-0 ml-0 w-40 bg-white border border-gray-200 shadow-xl rounded-lg py-2">
-                                    <a href="{{ route('laporan.penjualan') }}"
-                                        class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
-                                        Laporan Penjualan
-                                    </a>
-                                    <a href="{{ route('purchase.history') }}"
-                                        class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">Purchase
-                                        History</a>
-                                </div>
-                            </div>
+
+                            {{-- LAPORAN PENJUALAN --}}
+                            <a href="{{ route('laporan.penjualan') }}"
+                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                <i class="fas fa-chart-line w-6"></i> Laporan Penjualan
+                            </a>
+
+                            {{-- LAPORAN STOK --}}
+                            <a href="{{ route('laporan.stok') }}"
+                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                <i class="fas fa-box w-6"></i> Laporan Stok
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            {{-- PURCHASE HISTORY (MANAGE ORDER) --}}
+                            <a href="{{ route('purchase.history') }}"
+                                class="block px-4 py-2 hover:bg-gray-50 hover:text-orange-500 transition">
+                                <i class="fas fa-shopping-cart w-6"></i> Purchase History
+                            </a>
+
                         </div>
                     </div>
 
