@@ -7,20 +7,20 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\ProductVariant;
 
 class AdminController extends Controller
 {
     public function index()
     {
+        // Basic stats
         $totalProducts = Product::count();
-
         $totalBrands = Brand::count();
-
         $totalCategories = Category::count();
-
         $totalAdmins = User::where('role', 'admin')->count();
 
-        $recentProducts = Product::with('brand')
+        // Order stats
+        $recentProducts = Product::with(['brand', 'variants'])
             ->latest()
             ->take(5)
             ->get();
@@ -30,11 +30,17 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        $totalSuccessOrders = Order::where('status', 'success')
-            ->count();
+        // Order stats baru
+        $totalOrders = Order::count();
+        $totalSuccessOrders = Order::where('status', 'success')->count();
+        $totalRevenue = Order::where('status', 'success')->sum('total_price');
+        $totalProfit = $totalRevenue * 0.2; // 20% estimasi
 
-        $totalRevenue = Order::where('status', 'success')
-            ->sum('total_price');
+        // Low stock (stok < 5)
+        $lowStockVariants = ProductVariant::where('stock', '<', 10)
+            ->where('stock', '>', 0)
+            ->with('product')
+            ->get();
 
         return view('dashboard', compact(
             'totalProducts',
@@ -45,6 +51,10 @@ class AdminController extends Controller
             'recentOrders',
             'totalRevenue',
             'totalSuccessOrders',
+            // Baru
+            'totalOrders',
+            'totalProfit',
+            'lowStockVariants'
         ));
     }
 }
