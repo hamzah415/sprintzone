@@ -1,136 +1,225 @@
-{<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Stok</title>
+    <title>Laporan Stok Produk</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; font-size: 11px; padding: 20px; }
-        
-        .header { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            border-bottom: 3px solid #FF4500; 
-            padding-bottom: 15px; 
+        @page {
+            margin: 20mm 15mm 15mm 15mm;
         }
-        .header h1 { 
-            font-size: 22px; 
-            font-weight: bold; 
-            color: #FF4500; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #000;
+            padding: 20px;
         }
-        .header p { color: #666; margin-top: 5px; }
-        
-        .stats { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 20px; 
-            gap: 10px;
+
+        /* HEADER */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
         }
-        .stat-box { 
-            flex: 1; 
-            background: linear-gradient(135deg, #FF4500, #ff6b35); 
-            color: white; 
-            padding: 12px; 
-            border-radius: 8px; 
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .brand-address {
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .logo-img {
+            width: 60px;
+        }
+
+        /* TITLE */
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .report-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+        }
+
+        .report-date {
+            font-size: 11px;
+            color: #000;
+        }
+
+        /* STATS SUMMARY */
+        .stats-summary {
+            border: 1px solid #000;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            font-size: 11px;
             text-align: center;
         }
-        .stat-box p { font-size: 9px; text-transform: uppercase; opacity: 0.8; }
-        .stat-box .value { font-size: 18px; font-weight: bold; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { 
-            background: #333; 
-            color: white; 
-            padding: 8px; 
-            text-align: left; 
-            font-size: 9px; 
-            text-transform: uppercase; 
+
+        .stats-summary span {
+            display: inline-block;
+            margin: 0 10px;
         }
-        td { padding: 7px; border-bottom: 1px solid #ddd; }
-        tr:nth-child(even) { background: #f5f5f5; }
-        
-        .low-stock { color: #ff6b35; font-weight: bold; }
-        .out-stock { color: red; font-weight: bold; }
-        .ready { color: green; font-weight: bold; }
-        
-        .footer { 
-            margin-top: 30px; 
-            text-align: center; 
-            color: #999; 
-            font-size: 9px; 
-            border-top: 1px solid #ddd; 
-            padding-top: 15px; 
+
+        .stats-summary .divider {
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        thead th {
+            background-color: #e5e5e5;
+            font-weight: bold;
+            font-size: 9px;
+            text-transform: uppercase;
+            padding: 8px 6px;
+            text-align: left;
+            border: 1px solid #000;
+        }
+
+        tbody td {
+            padding: 6px;
+            border: 1px solid #000;
+            vertical-align: middle;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* STATUS */
+        .status-habis {
+            font-weight: bold;
+        }
+
+        .status-low {
+            font-weight: bold;
+        }
+
+        .status-ready {
+            font-weight: bold;
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 9px;
+            border-top: 1px solid #000;
+            padding-top: 8px;
         }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        <h1>Laporan Stok Produk</h1>
-        <p>SprintZone Store • {{ $tanggal }}</p>
-    </div>
-    
-    <div class="stats">
-        <div class="stat-box">
-            <p>Total Variant</p>
-            <div class="value">{{ $variants->count() }}</div>
+
+    <!-- HEADER -->
+    <div class="header-container">
+        <div>
+            <div class="brand-title">SPRINTZONE</div>
+            <div class="brand-address">
+                Jl. Inspeksi Kalimalang No.9, Cibatu, Cikarang Sel.,<br>
+                Kabupaten Bekasi, Jawa Barat 17530<br>
+                Telp: 0882-1353-4744
+            </div>
         </div>
-        <div class="stat-box">
-            <p>Total Stok</p>
-            <div class="value">{{ number_format($totalStock) }}</div>
-        </div>
-        <div class="stat-box">
-            <p>Low Stock</p>
-            <div class="value">{{ $variants->filter(fn($v) => $v->stock > 0 && $v->stock < 5)->count() }}</div>
-        </div>
-        <div class="stat-box">
-            <p>Habis</p>
-            <div class="value">{{ $variants->filter(fn($v) => $v->stock == 0)->count() }}</div>
+        
+        <div class="text-right">
+            <img src="{{ public_path('img/logo.png') }}" class="logo-img" alt="Logo">
+            <div class="website">SprintZone.online</div>
         </div>
     </div>
-    
+
+    <!-- TITLE -->
+    <div class="title-section">
+        <h1 class="report-title">Laporan Stok Produk</h1>
+        <p class="report-date">{{ $tanggal }}</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-summary">
+        <span><strong>Total Variant:</strong> {{ $variants->count() }}</span>
+        <span class="divider">|</span>
+        <span><strong>Total Stok:</strong> {{ number_format($totalStock) }}</span>
+        <span class="divider">|</span>
+        <span><strong>Low Stock:</strong>
+            {{ $variants->filter(fn($v) => $v->stock > 0 && $v->stock < 5)->count() }}</span>
+        <span class="divider">|</span>
+        <span><strong>Habis:</strong> {{ $variants->filter(fn($v) => $v->stock == 0)->count() }}</span>
+    </div>
+
+    <!-- TABLE -->
     <table>
         <thead>
             <tr>
-                <th>No</th>
-                <th>Produk</th>
-                <th>Kategori</th>
-                <th>Brand</th>
-                <th>Warna</th>
-                <th>Size</th>
-                <th>SKU</th>
-                <th>Harga</th>
-                <th>Stok</th>
-                <th>Status</th>
+                <th width="5%">No</th>
+                <th width="18%">Produk</th>
+                <th width="12%">Kategori</th>
+                <th width="10%">Brand</th>
+                <th width="8%">Warna</th>
+                <th width="5%">Size</th>
+                <th width="12%">SKU</th>
+                <th width="12%">Harga</th>
+                <th width="8%">Stok</th>
+                <th width="10%">Status</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($variants as $index => $v)
+            @foreach ($variants as $index => $v)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ $v->product->name ?? '-' }}</td>
                     <td>{{ $v->product->category->name ?? '-' }}</td>
                     <td>{{ $v->product->brand->name ?? '-' }}</td>
                     <td>{{ $v->color ?? '-' }}</td>
-                    <td>{{ $v->size ?? '-' }}</td>
+                    <td class="text-center">{{ $v->size ?? '-' }}</td>
                     <td>{{ $v->sku ?? '-' }}</td>
-                    <td>Rp {{ number_format($v->price, 0, ',', '.') }}</td>
-                    <td class="{{ $v->stock == 0 ? 'out-stock' : ($v->stock < 5 ? 'low-stock' : '') }}">
+                    <td class="text-right">Rp {{ number_format($v->price, 0, ',', '.') }}</td>
+                    <td class="text-center {{ $v->stock == 0 ? 'out-stock' : ($v->stock < 5 ? 'low-stock' : '') }}">
                         {{ $v->stock }}
                     </td>
-                    <td class="{{ $v->stock == 0 ? 'out-stock' : ($v->stock < 5 ? 'low-stock' : 'ready') }}">
-                        @if($v->stock == 0) Habis
-                        @elseif($v->stock < 5) Low Stock
-                        @else Ready @endif
+                    <td class="text-center">
+                        @if ($v->stock == 0)
+                            <span class="status-habis">HABIS</span>
+                        @elseif($v->stock < 5)
+                            <span class="status-low">LOW</span>
+                        @else
+                            <span class="status-ready">READY</span>
+                        @endif
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-    
+
+    <!-- FOOTER -->
     <div class="footer">
-        <p>Dicetak pada {{ now()->format('d F Y H:i:s') }} • Sistem Management SprintZone</p>
+        Dicetak: {{ now()->format('d/m/Y H:i:s') }} • Sistem Management SprintZone
     </div>
+
 </body>
+
 </html>
