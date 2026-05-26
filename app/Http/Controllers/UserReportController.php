@@ -2,49 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Order;
+use App\Models\ProductVariant;
+use App\Models\Product;
 
-class UserReportController extends Controller
+class StockReportController extends Controller
 {
     public function index()
     {
-        // Semua user yang pernah belanja
-        $users = User::whereHas('orders')
-            ->withCount('orders')
-            ->withSum('orders', 'total_price')
-            ->orderBy('orders_count', 'desc')
+        $variants = ProductVariant::with('product', 'product.category', 'product.brand')
+            ->orderBy('stock', 'asc')
             ->get();
-        
-        $totalUser = $users->count();
-        $totalBelanja = $users->sum('orders_sum_total_price');
-        
-        return view('laporan.user.index', compact('users', 'totalUser', 'totalBelanja'));
+
+        $totalStock = $variants->sum('stock');
+        $totalVariant = $variants->count();
+        $totalProduk = $variants->groupBy('product_id')->count();  // TAMBAHIN
+        $totalKategori = $variants->groupBy('product_id')->pluck('product.category_id')->filter()->count();  // TAMBAHIN
+
+        // Low stock
+        $lowStock = $variants->filter(function ($v) {
+            return $v->stock > 0 && $v->stock < 10;
+        });
+
+        // Out of stock
+        $outOfStock = $variants->filter(function ($v) {
+            return $v->stock == 0;
+        });
+
+        return view('laporan.stok.index', compact(
+            'variants',
+            'totalStock',
+            'totalVariant',
+            'totalProduk',
+            'totalKategori',
+            'lowStock',
+            'outOfStock'
+        ));
     }
 
     public function export()
     {
-        $users = User::whereHas('orders')
-            ->withCount('orders')
-            ->withSum('orders', 'total_price')
-            ->get();
-        
-        $filename = 'laporan-user-' . now()->format('Y-m-d') . '.csv';
-        
-        $headers = ['Content-Type' => 'text/csv', 'Content-Disposition' => 'attachment; filename="' . $filename . '"'];
+        $variants = ProductVariant::with('product')->orderBy('stock', 'asc')->get();
 
-        $callback = function() use ($users) {
+        $filename = 'laporan-stok-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($variants) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['No', 'Nama', 'Email', 'Total Order', 'Total Belanja', 'Terakhir Belanja']);
-            
-            foreach ($users as $index => $user) {
+            fputcsv($file, ['No', 'Produk', 'Kategori', 'Brand', 'Warna', 'Size', 'SKU', 'Harga', 'Stok', 'Status']);
+
+            foreach ($variants as $index => $v) {
+                if ($v->stock == 0) $status = 'OUT OF STOCK';
+                elseif ($v->stock < 5) $status = 'LOW STOCK';
+                else $status = 'READY';
+
                 fputcsv($file, [
                     $index + 1,
-                    $user->name,
-                    $user->email,
-                    $user->orders_count,
-                    number_format($user->orders_sum_total_price ?? 0, 0, ',', '.'),
-                    $user->orders->max('created_at')?->format('d/m/Y') ?? '-'
+                    $v->product->name ?? '-',
+                    $v->product->category->name ?? '-',
+                    $v->product->brand->name ?? '-',
+                    $v->color ?? '-',
+                    $v->size ?? '-',
+                    $v->sku ?? '-',
+                    number_format($v->price, 0, ',', '.'),
+                    $v->stock,
+                    $status
                 ]);
             }
             fclose($file);
