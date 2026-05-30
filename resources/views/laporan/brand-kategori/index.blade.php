@@ -18,53 +18,57 @@
 
         {{-- STATS CARDS --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl shadow-lg">
+
+            <div class="bg-blue-500 text-white p-4 rounded-lg">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-tags"></i>
                     </div>
                     <div>
-                        <p class="text-xs uppercase opacity-80">Total Brand</p>
-                        <p class="text-xl font-black">{{ $totalBrand }}</p>
+                        <p class="text-xs uppercase">Total Brand</p>
+                        <p class="text-2xl font-black">{{ $totalBrand }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-xl shadow-lg">
+            <div class="bg-green-600 text-white p-4 rounded-lg">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
                     <div>
-                        <p class="text-xs uppercase opacity-80">Total Order</p>
-                        <p class="text-xl font-black">{{ $totalOrders }}</p>
+                        <p class="text-xs uppercase">Total Order</p>
+                        <p class="text-2xl font-black">{{ $totalOrders }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-xl shadow-lg">
+            <div class="bg-yellow-500 text-white p-4 rounded-lg">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-box"></i>
                     </div>
                     <div>
-                        <p class="text-xs uppercase opacity-80">Total Qty</p>
-                        <p class="text-xl font-black">{{ $totalQty }}</p>
+                        <p class="text-xs uppercase">Total Qty</p>
+                        <p class="text-2xl font-black">{{ $totalQty }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-xl shadow-lg">
+            <div class="bg-red-500 text-white p-4 rounded-lg">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
                     <div>
-                        <p class="text-xs uppercase opacity-80">Pendapatan</p>
-                        <p class="text-xl font-black">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+                        <p class="text-xs uppercase">Pendapatan</p>
+                        <p class="text-2xl font-black">
+                            Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                        </p>
                     </div>
                 </div>
             </div>
+
         </div>
 
         {{-- ACCORDION TABLE --}}
