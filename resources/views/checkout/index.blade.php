@@ -1,128 +1,213 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="w-full px-4 lg:px-10 py-8 bg-gray-50 min-h-screen">
 
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold">Checkout</h1>
+        {{-- HEADER --}}
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">
+                Checkout
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Lengkapi data penerima dan selesaikan pesanan Anda
+            </p>
         </div>
 
         @if (session('success'))
-            <div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4">
+            <div class="bg-green-100 text-green-700 px-4 py-3 rounded-xl mb-6">
                 ✓ {{ session('success') }}
             </div>
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- LAYOUT --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            {{-- KIRI: DATA --}}
-            <div class="bg-white border rounded-xl p-5 order-2 md:order-1">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-sm">Data Penerima</h2>
-                    @if (auth()->user()->phone && auth()->user()->address)
-                        <span class="text-[10px] text-green-600">✓ Tersimpan</span>
-                    @endif
-                </div>
+            {{-- LEFT CONTENT --}}
+            <div class="lg:col-span-2 space-y-6">
 
-                <form action="{{ route('user.profile.save') }}" method="POST" class="space-y-3">
-                    @csrf
+                {{-- DATA PENERIMA --}}
+                <div class="bg-white border border-gray-200 rounded-2xl p-6">
 
-                    <div>
-                        <label class="text-xs text-gray-500 mb-1 block">Nama</label>
-                        <input type="text" name="name" value="{{ auth()->user()->name }}" required
-                            class="w-full border rounded-lg px-3 py-2 text-sm">
-                    </div>
-
-                    <div>
-                        <label class="text-xs text-gray-500 mb-1 block">WhatsApp</label>
-                        <input type="tel" name="phone" value="{{ auth()->user()->phone ?? '' }}" placeholder="0812..."
-                            class="w-full border rounded-lg px-3 py-2 text-sm">
-                    </div>
-
-                    <div>
-                        <label class="text-xs text-gray-500 mb-1 block">Alamat</label>
-                        <textarea name="address" rows="2" placeholder="JL, Kota"
-                            class="w-full border rounded-lg px-3 py-2 text-sm resize-none">{{ auth()->user()->address ?? '' }}</textarea>
-                    </div>
-
-                    <button type="submit"
-                        class="w-full bg-gray-800 hover:bg-gray-900 text-white py-2 rounded-lg text-sm transition">
-                        Simpan Data
-                    </button>
-                </form>
-            </div>
-
-            {{-- KANAN: CHECKOUT --}}
-            <div class="bg-white border rounded-xl p-5 order-1 md:order-2">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-sm">Pesanan ({{ count($cart) }})</h2>
-                </div>
-
-                @php $total = 0; @endphp
-
-                <div class="space-y-3">
-                    @foreach ($cart as $item)
-                        @php
-                            // CEK HARGA: variant dulu, kalo ga ada produk
-                            $price = $item->product->price ?? 0;
-                            $discount = $item->product->discount_price ?? null;
-                            $image = $item->product->image;
-
-                            if ($item->variant) {
-                                $price = $item->variant->price ?? $price;
-                                $discount = $item->variant->discount_price ?? $discount;
-                                $image = $item->variant->image ?? $image;
-                            }
-
-                            $effectivePrice = $discount ?? $price;
-                            $subtotal = $effectivePrice * $item->qty;
-                            $total += $subtotal;
-                        @endphp
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                @if ($image)
-                                    <img src="{{ asset('storage/' . $image) }}" class="w-10 h-10 rounded-lg object-cover">
-                                @else
-                                    <div class="w-10 h-10 rounded-lg bg-gray-100"></div>
-                                @endif
-                                <div class="text-sm">
-                                    <div>{{ $item->product->name }}</div>
-                                    @if ($item->variant)
-                                        <div class="text-[10px] text-gray-500">
-                                            {{ $item->variant->color }} / {{ $item->variant->size }} × {{ $item->qty }}
-                                        </div>
-                                    @else
-                                        <div class="text-[10px] text-gray-500">× {{ $item->qty }}</div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="text-sm font-bold">Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="font-bold text-lg">
+                                Data Penerima
+                            </h2>
+                            <p class="text-sm text-gray-500">
+                                Pastikan data pengiriman sudah benar
+                            </p>
                         </div>
-                    @endforeach
-                </div>
 
-                <div class="flex items-center justify-between mt-4 pt-3 border-t">
-                    <span class="font-bold">Total</span>
-                    <span class="font-bold text-lg text-orange-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
-                </div>
+                        @if (auth()->user()->phone && auth()->user()->address)
+                            <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                                ✓ Tersimpan
+                            </span>
+                        @endif
+                    </div>
 
-                @if (auth()->user()->phone && auth()->user()->address)
-                    <form action="{{ route('checkout.store') }}" method="POST">
+                    <form action="{{ route('user.profile.save') }}" method="POST" class="space-y-5">
                         @csrf
-                        <input type="hidden" name="customer_name" value="{{ auth()->user()->name }}">
-                        <input type="hidden" name="phone" value="{{ auth()->user()->phone }}">
-                        <input type="hidden" name="address" value="{{ auth()->user()->address }}">
+
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                Nama Lengkap
+                            </label>
+
+                            <input type="text" name="name" value="{{ auth()->user()->name }}" required
+                                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                Nomor WhatsApp
+                            </label>
+
+                            <input type="tel" name="phone" value="{{ auth()->user()->phone ?? '' }}"
+                                placeholder="0812xxxx"
+                                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                Alamat Lengkap
+                            </label>
+
+                            <textarea name="address" rows="4" placeholder="Jl, Kecamatan, Kota, Provinsi"
+                                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none">{{ auth()->user()->address ?? '' }}</textarea>
+                        </div>
 
                         <button type="submit"
-                            class="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-medium text-sm transition">
-                            Checkout Sekarang
+                            class="bg-black hover:bg-orange-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition">
+                            Simpan Data
                         </button>
                     </form>
-                @else
-                    <div class="mt-4 text-xs text-gray-500 text-center py-2 bg-gray-100 rounded-lg">
-                        ⚠️ Simpan data di kiri dulu
+                </div>
+
+            </div>
+
+            {{-- RIGHT SIDEBAR --}}
+            <div>
+
+                <div class="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24">
+
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-bold text-lg">
+                            Ringkasan Pesanan
+                        </h2>
+
+                        <span class="text-sm text-gray-500">
+                            {{ count($cart) }} Item
+                        </span>
                     </div>
-                @endif
+
+                    @php $total = 0; @endphp
+
+                    <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+
+                        @foreach ($cart as $item)
+                            @php
+                                $price = $item->product->price ?? 0;
+                                $discount = $item->product->discount_price ?? null;
+                                $image = $item->product->image;
+
+                                if ($item->variant) {
+                                    $price = $item->variant->price ?? $price;
+                                    $discount = $item->variant->discount_price ?? $discount;
+                                    $image = $item->variant->image ?? $image;
+                                }
+
+                                $effectivePrice = $discount ?? $price;
+                                $subtotal = $effectivePrice * $item->qty;
+                                $total += $subtotal;
+                            @endphp
+
+                            <div class="flex gap-3">
+
+                                {{-- IMAGE --}}
+                                @if ($image)
+                                    <img src="{{ asset('storage/' . $image) }}"
+                                        class="w-16 h-16 rounded-xl object-cover border">
+                                @else
+                                    <div class="w-16 h-16 rounded-xl bg-gray-100"></div>
+                                @endif
+
+                                {{-- INFO --}}
+                                <div class="flex-1">
+
+                                    <div class="text-sm font-semibold text-gray-800 leading-snug">
+                                        {{ $item->product->name }}
+                                    </div>
+
+                                    @if ($item->variant)
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            {{ $item->variant->color }}
+                                            /
+                                            {{ $item->variant->size }}
+                                        </div>
+                                    @endif
+
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        Qty: {{ $item->qty }}
+                                    </div>
+
+                                    <div class="text-sm font-bold text-orange-600 mt-2">
+                                        Rp {{ number_format($subtotal, 0, ',', '.') }}
+                                    </div>
+
+                                </div>
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                    {{-- TOTAL --}}
+                    <div class="border-t pt-5 mt-5">
+
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500">
+                                Subtotal
+                            </span>
+
+                            <span class="text-sm font-medium">
+                                Rp {{ number_format($total, 0, ',', '.') }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold">
+                                Total
+                            </span>
+
+                            <span class="text-2xl font-black text-orange-600">
+                                Rp {{ number_format($total, 0, ',', '.') }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    {{-- BUTTON --}}
+                    @if (auth()->user()->phone && auth()->user()->address)
+                        <form action="{{ route('checkout.store') }}" method="POST" class="mt-6">
+                            @csrf
+
+                            <input type="hidden" name="customer_name" value="{{ auth()->user()->name }}">
+                            <input type="hidden" name="phone" value="{{ auth()->user()->phone }}">
+                            <input type="hidden" name="address" value="{{ auth()->user()->address }}">
+
+                            <button type="submit"
+                                class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-bold transition">
+                                Checkout Sekarang
+                            </button>
+                        </form>
+                    @else
+                        <div
+                            class="mt-6 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm rounded-xl px-4 py-3 text-center">
+                            ⚠️ Lengkapi data penerima terlebih dahulu
+                        </div>
+                    @endif
+
+                </div>
+
             </div>
 
         </div>
