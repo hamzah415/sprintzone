@@ -284,6 +284,8 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
 
 Route::post('/payment/success/{order}', [CheckoutController::class, 'paymentSuccess'])->name('payment.success');
 
+Route::post('/payment/cancel/{order}', [CheckoutController::class, 'paymentCancel'])->name('payment.cancel');
+
 // routes/web.php - TAMBAHIN
 Route::get('/test-variant', function () {
     $sizesInput = '36, 37, 38';

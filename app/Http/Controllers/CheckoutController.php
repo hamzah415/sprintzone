@@ -96,6 +96,9 @@ class CheckoutController extends Controller
             $address .= ', ' . $request->city;
         }
 
+        // ⏰ TAMBAHKAN EXPIRES_AT (1 JAM)
+        $expiresAt = now()->addHour();
+
         $order = Order::create([
             'user_id' => auth()->id(),
             'customer_name' => $customerName,
@@ -103,6 +106,7 @@ class CheckoutController extends Controller
             'address' => $address,
             'total_price' => $total,
             'status' => 'pending',
+            'expires_at' => $expiresAt, // ⏰ TIMESTAMP EXPIRY
         ]);
 
         foreach ($itemsData as $data) {
@@ -173,6 +177,27 @@ class CheckoutController extends Controller
     public function paymentSuccess(Order $order)
     {
         $order->update(['status' => 'success']);
+        return response()->json(['success' => true]);
+    }
+
+    // ❌ CANCEL ORDER (AUTO & MANUAL)
+    public function paymentCancel(Order $order)
+    {
+        // Cek jika order masih pending
+        if ($order->status === 'pending') {
+            // Kembalikan stock
+            $items = OrderItem::where('order_id', $order->id)->get();
+            
+            foreach ($items as $item) {
+                if ($item->variant_id) {
+                    ProductVariant::where('id', $item->variant_id)->increment('stock', $item->qty);
+                }
+            }
+
+            // Update status
+            $order->update(['status' => 'cancelled']);
+        }
+
         return response()->json(['success' => true]);
     }
 

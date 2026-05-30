@@ -91,6 +91,15 @@
                     </div>
                 </div>
 
+                {{-- TIMER --}}
+                <div class="px-6 py-3 bg-red-50 border-b border-red-100 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-red-600 font-bold text-sm">Batas Waktu:</span>
+                    <span id="countdown" class="text-red-600 font-black text-lg">01:00:00</span>
+                </div>
+
                 {{-- CONTENT --}}
                 <div class="p-8 flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
@@ -133,6 +142,64 @@
     <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 
     <script>
+        // Timer configuration (1 jam dalam detik)
+        const EXPIRY_SECONDS = 3600; // 1 jam
+        let timeRemaining = {{ $order->expires_at ? \Carbon\Carbon::now()->diffInSeconds($order->expires_at) : 3600 }};
+        
+        // Format waktu ke HH:MM:SS
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            const h = hours.toString().padStart(2, '0');
+            const m = minutes.toString().padStart(2, '0');
+            const s = secs.toString().padStart(2, '0');
+            
+            return `${h}:${m}:${s}`;
+        }
+
+        // Update tampilan timer
+        const countdownEl = document.getElementById('countdown');
+        countdownEl.textContent = formatTime(timeRemaining);
+
+        // Timer interval
+        const timerInterval = setInterval(function() {
+            timeRemaining--;
+            
+            countdownEl.textContent = formatTime(timeRemaining);
+            
+            // Jika waktu habis
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                cancelOrder();
+            }
+        }, 1000);
+
+        // Fungsi cancel order
+        async function cancelOrder() {
+            try {
+                const response = await fetch('/payment/cancel/{{ $order->id }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                if (response.ok) {
+                    alert(' Waktu pembayaran telah expire. Pesanan dibatalkan.');
+                    window.location.href = '/My-Order?cancelled=true';
+                } else {
+                    window.location.href = '/My-Order';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                window.location.href = '/My-Order';
+            }
+        }
+
+        // Payment button handler
         document.addEventListener('DOMContentLoaded', function() {
             const snapToken = '{{ $snapToken }}';
             const orderId = '{{ $order->id }}';
@@ -140,6 +207,8 @@
             document.getElementById('pay-button').addEventListener('click', function() {
                 snap.pay(snapToken, {
                     onSuccess: function(result) {
+                        // Hentikan timer jika pembayaran berhasil
+                        clearInterval(timerInterval);
                         handlePaymentSuccess(result, orderId);
                     },
                     onPending: function(result) {
