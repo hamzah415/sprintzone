@@ -186,7 +186,7 @@
                         </div>
                         <span class="text-gray-300">|</span>
                         <span class="text-sm text-gray-500">
-                            Terjual {{ $product->sold_count ?? 0 }}+
+                            Terjual {{ $product->sold_count ?? 9999 }}+
                         </span>
                     </div>
 
@@ -315,8 +315,8 @@
                                 <input type="hidden" name="variant_id" id="variantId">
 
                                 @if ($totalStock > 0)
-                                    <button type="submit" id="addToCartBtn"
-                                        class="w-full bg-black hover:bg-orange-600 text-white py-4 rounded-2xl font-semibold transition">
+                                    <button type="submit" id="addToCartBtn" disabled
+                                        class="w-full bg-black hover:bg-orange-600 text-white py-4 rounded-2xl font-semibold transition disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:cursor-not-allowed">
                                         + Add To Cart
                                     </button>
                                 @else
@@ -414,6 +414,7 @@
 
         function renderSizeButtons(sizes) {
             sizeButtons.forEach(btn => {
+
                 if (sizes.includes(btn.dataset.size)) {
                     btn.classList.remove('hidden');
                 } else {
@@ -425,18 +426,69 @@
 
         function renderColorButtons(colors) {
             colorButtons.forEach(btn => {
-                if (colors.includes(btn.dataset.color)) {
-                    btn.classList.remove('hidden');
-                } else {
-                    btn.classList.add('hidden');
-                    btn.classList.remove('active');
+
+                btn.classList.remove('opacity-50');
+
+                // jangan disable
+                btn.disabled = false;
+
+                if (!colors.includes(btn.dataset.color)) {
+                    btn.classList.add('opacity-100');
                 }
             });
         }
+        
+        colorButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+
+                // reset active
+                colorButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                selectedColor = this.dataset.color;
+
+                // ambil variant pertama berdasarkan warna
+                const colorVariant = variants.find(v =>
+                    v.color === selectedColor && v.image
+                );
+
+                // ganti gambar utama
+                if (colorVariant && colorVariant.image) {
+                    document.getElementById('mainImage').src =
+                        `/storage/${colorVariant.image}`;
+                }
+
+                // filter size berdasarkan warna
+                const availableSizes = variants
+                    .filter(v => v.color === selectedColor)
+                    .map(v => v.size);
+
+                renderSizeButtons([...new Set(availableSizes)]);
+
+                // reset size jika tidak tersedia
+                const sizeBtnEl = document.querySelector(
+                    `.size-btn[data-size="${selectedSize}"]`
+                );
+
+                if (!sizeBtnEl || !availableSizes.includes(selectedSize)) {
+                    selectedSize = null;
+
+                    sizeButtons.forEach(b =>
+                        b.classList.remove('active')
+                    );
+
+                    hideVariantInfo();
+                }
+
+                findVariant();
+            });
+        });
 
         function hideVariantInfo() {
             document.getElementById('variantInfo').classList.add('hidden');
             document.getElementById('variantId').value = '';
+
+            document.getElementById('addToCartBtn').disabled = true;
         }
 
         function findVariant() {
@@ -455,6 +507,7 @@
                 const hasDiscount = variant.discount_price && variant.discount_price < variant.price;
 
                 document.getElementById('variantInfo').classList.remove('hidden');
+                document.getElementById('addToCartBtn').disabled = false;
                 document.getElementById('variantSku').innerText = variant.sku ?? '-';
 
                 if (hasDiscount) {
