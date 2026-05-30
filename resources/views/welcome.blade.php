@@ -1,70 +1,462 @@
+{{-- =========================
+SPRINTZONE PREMIUM HOME
+========================= --}}
+
 @extends('layouts.app')
 
-@section('title', 'Power Your Steps')
+@section('title', 'SprintZone - Fast Steps Big Impact')
 
 @section('styles')
-    .shoe-shadow {
-    filter: drop-shadow(0 35px 35px rgba(0,0,0,0.25));
-    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+
+    body{
+    background:#f7f7f7;
     }
-    .shoe-container:hover .shoe-image {
-    transform: rotate(-10deg) scale(1.6);
+
+    .hero-bg{
+    background:
+    radial-gradient(circle at top right, rgba(249,115,22,0.15), transparent 30%),
+    linear-gradient(to right,#050505,#101010,#151515);
     }
-    .variant-btn.active {
-    background: black;
-    color: white;
+
+    .shoe-shadow{
+    filter: drop-shadow(0 40px 40px rgba(0,0,0,0.35));
+    transition: all .7s cubic-bezier(0.4,0,0.2,1);
     }
+
+    .shoe-container:hover .shoe-image{
+    transform: rotate(-14deg) scale(1.6);
+    }
+
+    .shoe-image{
+    transition: all .7s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .variant-btn.active{
+    background:black;
+    color:white;
+    }
+
+    .product-card{
+    transition:all .4s ease;
+    }
+
+    .product-card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 25px 50px rgba(0,0,0,0.08);
+    }
+
+    .product-image{
+    transition:all .5s ease;
+    }
+
+    .product-card:hover .product-image{
+    transform:scale(1.08) rotate(-3deg);
+    }
+
+    .banner-card{
+    overflow:hidden;
+    position:relative;
+    }
+
+    .banner-card img{
+    transition:all .6s ease;
+    }
+
+    .banner-card:hover img{
+    transform:scale(1.05);
+    }
+
+    .glass{
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(10px);
+    }
+
 @endsection
 
 @section('content')
-    <main
-        class="relative flex-1 flex flex-col md:flex-row items-center px-6 md:px-20 py-10 md:py-0 overflow-hidden bg-white">
-        <div class="z-20 w-full md:w-1/2 text-center md:text-left order-1">
-            <h2 class="text-5xl md:text-[7.5rem] font-black italic uppercase leading-[0.85] mb-6 tracking-tighter">
-                Power Your <br><span class="text-orange-500 md:text-black">Steps</span>
-            </h2>
-            <p class="text-gray-500 text-sm md:text-lg max-w-sm mb-10 font-medium leading-relaxed mx-auto md:mx-0">
-                Designed to support your every move, helping you go further, faster, and stronger every day.
-            </p>
-            <button @click="modalOpen = true"
-                class="bg-[#444444] text-white px-10 md:px-16 py-4 rounded-md font-black uppercase text-xs md:text-sm tracking-[0.3em] shadow-xl hover:bg-black transition-all active:scale-95">
-                Buy now
-            </button>
-        </div>
-        <div
-            class="shoe-container relative w-full md:w-1/2 h-[350px] md:h-full flex justify-center items-center mt-12 md:mt-0 order-2">
-            <div class="absolute w-72 h-72 bg-orange-100 rounded-full blur-[110px] opacity-40 animate-pulse"></div>
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070"
-                class="shoe-image shoe-shadow relative z-10 w-full max-w-md md:max-w-4xl transform rotate-[-15deg] md:rotate-[-20deg] scale-110 md:scale-150 object-contain">
-        </div>
-    </main>
 
-    {{-- HOME PRODUCTS --}}
-    <div class="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-            <div>
-                <div class="mb-4">
-                    <h2 class="text-3xl md:text-4xl font-black italic uppercase tracking-tighter">
-                        Trending <span class="text-orange-500">Now</span>
-                    </h2>
-                    <p class="text-gray-500 font-medium">No limits. Just your best performance ever.</p>
+    {{-- ================= HERO ================= --}}
+    <section class="hero-bg relative overflow-hidden min-h-[78vh] flex items-center">
+
+        {{-- blur --}}
+        <div class="absolute top-[-80px] right-[-80px] w-[320px] h-[320px] bg-orange-500/20 blur-[120px] rounded-full">
+        </div>
+
+        <div class="max-w-screen-2xl mx-auto w-full px-6 md:px-12 py-12">
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+
+                {{-- LEFT --}}
+                <div class="relative z-20">
+
+                    <span
+                        class="inline-flex items-center gap-2 bg-white/10 border border-white/10 text-white text-[10px] uppercase tracking-[0.25em] px-4 py-2 rounded-full font-black mb-6">
+                        NEW ARRIVAL
+                    </span>
+
+                    <h1
+                        class="text-white text-4xl md:text-[5.8rem] leading-[0.85] font-black italic uppercase tracking-[-0.08em]">
+
+                        FAST <br>
+                        STEPS <br>
+
+                        <span class="text-orange-500">
+                            BIG IMPACT
+                        </span>
+
+                    </h1>
+
+                    <p class="text-gray-300 max-w-md mt-6 leading-relaxed text-sm">
+                        Temukan koleksi sepatu premium dari berbagai brand ternama
+                        dengan desain modern dan nyaman digunakan setiap hari.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 mt-8">
+
+                        <button
+                            class="bg-white text-black hover:bg-orange-500 hover:text-white px-8 py-3 rounded-xl text-[11px] uppercase tracking-[0.25em] font-black transition-all hover:scale-105">
+
+                            BELI SEKARANG
+
+                        </button>
+
+                        <button
+                            class="border border-white/20 text-white hover:bg-white hover:text-black px-8 py-3 rounded-xl text-[11px] uppercase tracking-[0.25em] font-black transition-all">
+
+                            EXPLORE
+
+                        </button>
+
+                    </div>
+
+                    {{-- STATS --}}
+                    <div class="flex flex-wrap items-center gap-8 mt-10">
+
+                        <div>
+                            <h3 class="text-white text-3xl font-black">250+</h3>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-[0.3em] mt-1">
+                                Products
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-white text-3xl font-black">50+</h3>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-[0.3em] mt-1">
+                                Brands
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-white text-3xl font-black">10K+</h3>
+                            <p class="text-gray-400 text-[10px] uppercase tracking-[0.3em] mt-1">
+                                Customers
+                            </p>
+                        </div>
+
+                    </div>
+
                 </div>
+
+                {{-- RIGHT --}}
+                <div class="relative flex justify-center items-center">
+
+                    {{-- BACKGROUND GLOW --}}
+                    <div
+                        class="absolute w-[260px] h-[260px] md:w-[380px] md:h-[380px] bg-orange-500/10 blur-[90px] rounded-full">
+                    </div>
+
+                    {{-- SHOE --}}
+                    <img src="{{ asset('img/sepatu.png') }}"
+                        class="relative z-10 w-full max-w-sm md:max-w-xl object-contain">
+
+                </div>
+
             </div>
+
+        </div>
+
+    </section>
+
+    {{-- ================= BRANDS ================= --}}
+    <section class="bg-white border-y border-gray-100">
+
+        <div class="max-w-screen-2xl mx-auto px-6 md:px-12 py-10">
+
+            {{-- TITLE --}}
+            <div class="flex items-end justify-between mb-8">
+
+                <div>
+
+                    <span class="text-orange-500 text-xs uppercase tracking-[0.3em] font-black">
+                        TOP BRANDS
+                    </span>
+
+                    <h2 class="text-3xl md:text-5xl font-black italic uppercase tracking-[-0.06em] mt-2">
+                        Trusted Brands
+                    </h2>
+
+                </div>
+
+                <a href="{{ route('brands.index') }}"
+                    class="hidden md:flex text-sm font-black uppercase tracking-widest text-gray-400 hover:text-orange-500 transition-all">
+
+                    View All
+
+                </a>
+
+            </div>
+
+            {{-- BRAND GRID --}}
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-5">
+
+                @php
+                    $brands = \App\Models\Brand::with('images')->orderBy('name')->take(5)->get();
+                @endphp
+
+                @forelse($brands as $brand)
+                    <a href="{{ route('products.etalase') }}?brand={{ $brand->slug }}"
+                        class="glass rounded-[2rem] py-7 px-6 flex flex-col items-center justify-center border border-gray-100 hover:shadow-2xl hover:border-orange-200 transition-all duration-500 group no-underline hover:no-underline">
+
+                        {{-- LOGO --}}
+                        @if ($brand->images->isNotEmpty())
+                            <img src="{{ asset('storage/' . $brand->images->first()->image_path) }}"
+                                alt="{{ $brand->name }}"
+                                class="h-10 md:h-12 object-contain opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all duration-500">
+                        @else
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-xl font-black text-gray-400 group-hover:bg-orange-500 group-hover:text-white transition-all">
+
+                                {{ substr($brand->name, 0, 1) }}
+
+                            </div>
+                        @endif
+
+                        {{-- NAME --}}
+                        <span
+                            class="mt-4 font-black uppercase tracking-[0.2em] text-[11px] text-gray-700 group-hover:text-orange-500 transition-all text-center">
+
+                            {{ $brand->name }}
+
+                        </span>
+
+                    </a>
+
+                @empty
+
+                    <div class="col-span-full text-center py-10">
+
+                        <p class="text-gray-400 font-medium">
+                            No Brands Available
+                        </p>
+
+                    </div>
+                @endforelse
+
+            </div>
+
+        </div>
+
+    </section>
+
+    {{-- ================= CATEGORY ================= --}}
+    <section class="max-w-screen-2xl mx-auto px-6 md:px-12 py-16">
+
+        {{-- HEADER --}}
+        <div class="flex items-end justify-between mb-10">
+
+            <div>
+
+                <span class="text-orange-500 text-xs uppercase tracking-[0.3em] font-black">
+                    SPRINTZONE CATEGORY
+                </span>
+
+                <h2 class="text-4xl md:text-5xl font-black italic uppercase tracking-[-0.06em] mt-2">
+                    Popular Category
+                </h2>
+
+                <p class="text-gray-500 mt-2">
+                    Pilih kategori favoritmu
+                </p>
+
+            </div>
+
+        </div>
+
+        {{-- GRID --}}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+
+            @forelse($categories as $category)
+                <a href="{{ route('products.etalase') }}?category={{ $category->slug }}"
+                    class="relative overflow-hidden rounded-[2rem] min-h-[230px] group">
+
+                    {{-- IMAGE --}}
+                    @if ($category->image)
+                        <img src="{{ asset('storage/' . $category->image) }}"
+                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-all duration-700">
+                    @else
+                        <div class="absolute inset-0 bg-gray-200"></div>
+                    @endif
+
+                    {{-- OVERLAY --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                    </div>
+
+                    {{-- CONTENT --}}
+                    <div class="relative z-10 h-full flex flex-col justify-end p-5">
+
+                        <h3 class="text-white text-lg font-black italic uppercase tracking-wide">
+
+                            {{ $category->name }}
+
+                        </h3>
+
+                        <p class="text-gray-300 text-xs mt-2 line-clamp-2">
+
+                            {{ $category->description }}
+
+                        </p>
+
+                    </div>
+
+                </a>
+
+            @empty
+
+                <div class="col-span-full text-center py-10">
+
+                    <p class="text-gray-400">
+                        No Categories Available
+                    </p>
+
+                </div>
+            @endforelse
+
+        </div>
+
+    </section>
+
+    {{-- ================= BANNERS ================= --}}
+    <section class="max-w-screen-2xl mx-auto px-6 md:px-12 pb-16">
+
+        <div class="grid md:grid-cols-3 gap-6">
+
+            {{-- BIG --}}
+            <div
+                class="banner-card relative md:col-span-2 bg-black rounded-[2.5rem] overflow-hidden min-h-[420px] p-10 flex items-center">
+
+                <div class="relative z-20 max-w-md">
+
+                    <span class="text-orange-500 text-xs font-black tracking-[0.3em] uppercase">
+                        LIMITED DEAL
+                    </span>
+
+                    <h2
+                        class="text-white text-5xl md:text-7xl font-black italic uppercase leading-[0.9] tracking-[-0.08em] mt-4">
+                        DISCOUNT <br>
+                        UP TO 50%
+                    </h2>
+
+                    <p class="text-gray-400 mt-5 text-sm leading-relaxed">
+                        Dapatkan penawaran terbaik untuk semua koleksi pilihan SprintZone.
+                    </p>
+
+                    <button
+                        class="mt-8 bg-white text-black hover:bg-orange-500 hover:text-white px-8 py-4 rounded-xl text-xs uppercase tracking-[0.3em] font-black transition-all">
+                        SHOP NOW
+                    </button>
+
+                </div>
+
+                <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2070"
+                    class="absolute right-[-50px] bottom-[-20px] w-[420px] rotate-[-20deg]">
+
+            </div>
+
+            {{-- SMALL --}}
+            <div class="flex flex-col gap-6">
+
+                <div class="banner-card relative bg-white rounded-[2.5rem] p-8 overflow-hidden min-h-[200px]">
+
+                    <span class="text-orange-500 text-xs uppercase tracking-[0.3em] font-black">
+                        NEW SEASON
+                    </span>
+
+                    <h3 class="text-3xl font-black italic uppercase tracking-[-0.06em] mt-3">
+                        SPRING <br>
+                        SUMMER 2026
+                    </h3>
+
+                    <img src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=2070"
+                        class="absolute bottom-[-10px] right-[-20px] w-56 rotate-[-15deg]">
+
+                </div>
+
+                <div
+                    class="banner-card relative bg-orange-500 rounded-[2.5rem] p-8 overflow-hidden min-h-[200px] text-white">
+
+                    <span class="text-xs uppercase tracking-[0.3em] font-black">
+                        EXTRA OFFER
+                    </span>
+
+                    <h3 class="text-5xl font-black italic tracking-[-0.08em] mt-3">
+                        10% OFF
+                    </h3>
+
+                    <p class="mt-3 text-sm text-orange-100">
+                        Gunakan kode :
+                        <span class="font-black">SPRINT10</span>
+                    </p>
+
+                    <div
+                        class="absolute right-[-20px] bottom-[-40px] text-[12rem] font-black text-white/10 italic leading-none">
+                        %
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    {{-- ================= PRODUCTS ================= --}}
+    <section class="max-w-screen-2xl mx-auto px-6 md:px-12 pb-20">
+
+        <div class="flex items-end justify-between mb-12">
+
+            <div>
+
+                <span class="text-orange-500 text-xs uppercase tracking-[0.3em] font-black">
+                    SPRINTZONE COLLECTION
+                </span>
+
+                <h2 class="text-4xl md:text-6xl font-black italic uppercase tracking-[-0.08em] mt-3">
+                    Best Seller
+                </h2>
+
+            </div>
+
         </div>
 
         {{-- PRODUCT GRID --}}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+
             @forelse($products ?? [] as $product)
-                <div class="group product-item" data-product-id="{{ $product->id }}">
+                <div class="product-card bg-white rounded-[2rem] overflow-hidden p-4 border border-gray-100">
 
                     <a href="{{ route('products.show', $product->id) }}" class="block no-underline hover:no-underline">
-                        {{-- IMAGE (dari variant) --}}
-                        <div class="relative aspect-square overflow-hidden rounded-2xl bg-gray-100 mb-4">
+
+                        {{-- IMAGE --}}
+                        <div
+                            class="relative aspect-square overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-gray-100 to-gray-200">
+
                             @php
-                                // Cari gambar dari variant
                                 $productImage = null;
+
                                 if ($product->variants->isNotEmpty()) {
                                     $variantWithImage = $product->variants->firstWhere(fn($v) => !empty($v['image']));
+
                                     if ($variantWithImage) {
                                         $productImage = $variantWithImage['image'];
                                     }
@@ -72,315 +464,119 @@
                             @endphp
 
                             @if ($productImage)
-                                <img src="{{ asset('storage/' . $productImage) }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image
-                                </div>
+                                <img src="{{ asset('storage/' . $productImage) }}"
+                                    class="product-image w-full h-full object-cover">
                             @endif
 
-                            {{-- STATUS LABEL --}}
-                            <div class="absolute top-3 left-3">
+                            {{-- STATUS --}}
+                            <div class="absolute top-4 left-4 flex gap-2">
+
                                 @if ($product->status == 'active')
                                     <span
-                                        class="bg-black text-white text-[9px] font-black px-2 py-1 uppercase italic rounded">New</span>
+                                        class="bg-black text-white text-[10px] font-black uppercase italic px-3 py-1 rounded-full">
+                                        NEW
+                                    </span>
                                 @endif
+
                             </div>
 
-                            {{-- HABIS LABEL --}}
-                            @php
-                                // Cek total stock
-                                $totalStock = 0;
-                                if ($product->variants->isNotEmpty()) {
-                                    $totalStock = $product->variants->sum('stock');
-                                } else {
-                                    $totalStock = $product->stock ?? 0;
-                                }
-                            @endphp
-                            @if ($totalStock <= 0)
-                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
-                                    <span
-                                        class="bg-red-600 text-white text-xs font-black px-3 py-1 uppercase italic rounded">Habis</span>
-                                </div>
-                            @endif
                         </div>
 
-                        {{-- INFO (harga dari variant) --}}
-                        <div class="space-y-1">
-                            <div class="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
+                        {{-- INFO --}}
+                        <div class="pt-5">
+
+                            <div class="text-[10px] text-orange-500 font-black uppercase tracking-[0.3em]">
                                 {{ $product->brand->name ?? 'No Brand' }}
                             </div>
-                            <h3 class="font-bold text-sm text-gray-800 leading-tight line-clamp-2">
+
+                            <h3 class="font-bold text-sm md:text-base text-gray-900 mt-2 line-clamp-2">
                                 {{ $product->name }}
                             </h3>
+
                             @php
-                                // Cari harga dari variant termurah
                                 $minPrice = 0;
                                 $minDiscount = null;
+
                                 if ($product->variants->isNotEmpty()) {
                                     $variantPrices = $product->variants->pluck('price')->filter();
                                     $variantDiscounts = $product->variants->pluck('discount_price')->filter();
+
                                     if ($variantPrices->isNotEmpty()) {
                                         $minPrice = $variantPrices->min();
                                     }
+
                                     if ($variantDiscounts->isNotEmpty()) {
                                         $minDiscount = $variantDiscounts->min();
                                     }
                                 }
+
                                 $hasDiscount = $minDiscount && $minDiscount < $minPrice;
                             @endphp
 
                             @if ($hasDiscount)
-                                <div class="flex items-center gap-2">
-                                    <div class="text-lg font-black italic tracking-tighter text-gray-900">
+                                <div class="flex items-center gap-2 mt-3">
+
+                                    <div class="text-2xl font-black italic tracking-[-0.06em]">
                                         Rp {{ number_format($minDiscount, 0, ',', '.') }}
                                     </div>
-                                    <div class="text-[10px] text-gray-400 line-through">
+
+                                    <div class="text-xs line-through text-gray-400">
                                         Rp {{ number_format($minPrice, 0, ',', '.') }}
                                     </div>
+
                                 </div>
                             @else
-                                <div class="text-lg font-black italic tracking-tighter text-gray-900">
+                                <div class="text-2xl font-black italic tracking-[-0.06em] mt-3">
                                     Rp {{ number_format($minPrice, 0, ',', '.') }}
                                 </div>
                             @endif
+
                         </div>
+
                     </a>
 
-                    {{-- BUTTON (disabled kalau habis) --}}
+                    {{-- BUTTON --}}
                     @auth
-                        @if ($totalStock > 0)
-                            <button type="button"
-                                onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
-                                class="w-full mt-4 bg-gray-100 group-hover:bg-orange-600 group-hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                                Add to Cart
-                            </button>
-                        @else
-                            <button disabled
-                                class="w-full mt-4 bg-gray-200 text-gray-500 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
-                                Habis
-                            </button>
-                        @endif
+
+                        <button type="button"
+                            onclick="handleAddToCart({{ $product->id }}, '{{ str_replace("'", "\\'", $product->name) }}')"
+                            class="w-full mt-5 bg-gray-100 hover:bg-orange-500 hover:text-white transition-all py-3 rounded-2xl text-[11px] font-black uppercase tracking-[0.25em]">
+                            ADD TO CART
+                        </button>
                     @else
                         <a href="{{ route('login') }}"
-                            class="block w-full mt-4 text-center hover:no-underline bg-gray-100 hover:bg-orange-600 hover:text-white transition-colors py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                            Add to Cart
+                            class="block text-center w-full mt-5 bg-gray-100 hover:bg-orange-500 hover:text-white transition-all py-3 rounded-2xl text-[11px] font-black uppercase tracking-[0.25em]">
+                            ADD TO CART
                         </a>
+
                     @endauth
+
                 </div>
+
             @empty
-                <div class="col-span-full text-center py-20">
-                    <div class="flex flex-col items-center justify-center">
-                        <i class="fas fa-box-open text-gray-300 text-5xl mb-4"></i>
-                        <p class="text-gray-400 font-medium text-sm tracking-wide">There is no product data yet.</p>
+
+                <div class="col-span-full py-24 text-center">
+
+                    <div class="w-24 h-24 rounded-full bg-gray-100 mx-auto flex items-center justify-center text-4xl mb-6">
+                        📦
                     </div>
+
+                    <h3 class="text-3xl font-black italic uppercase">
+                        Product Empty
+                    </h3>
+
+                    <p class="text-gray-500 mt-3">
+                        Belum ada produk tersedia.
+                    </p>
+
                 </div>
             @endforelse
+
         </div>
-    </div>
 
-    {{-- VARIANT MODAL --}}
-    <div id="variantModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
-            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center">
-                <div>
-                    <h3 class="text-white font-black italic uppercase">Pilih Variant</h3>
-                    <p class="text-gray-400 text-xs" id="modalProductName"></p>
-                </div>
-                <button onclick="closeVariantModal()"
-                    class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
-            </div>
-            <form id="variantForm" method="POST" class="p-6">
-                @csrf
-                <input type="hidden" name="variant_id" id="selectedVariantId">
-                <input type="hidden" name="qty" id="variantQty" value="1">
+    </section>
 
-                <div class="mb-4">
-                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih Warna</label>
-                    <div class="flex flex-wrap gap-2" id="colorOptions"></div>
-                </div>
+    {{-- ================= MODAL ================= --}}
+    {{-- PAKAI MODAL KAMU YANG TADI --}}
 
-                <div class="mb-4">
-                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pilih
-                        Ukuran</label>
-                    <div class="flex flex-wrap gap-2" id="sizeOptions"></div>
-                </div>
-
-                <div id="variantInfo" class="hidden bg-gray-50 rounded-xl p-4 mb-4">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-500">Stock:</span>
-                        <span class="font-bold" id="modalStock">-</span>
-                    </div>
-                    <div class="flex justify-between text-sm mt-2">
-                        <span class="text-gray-500">Harga:</span>
-                        <span class="font-bold text-orange-600" id="modalPrice">-</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4 mb-4">
-                    <label class="text-xs font-black text-gray-500 uppercase tracking-widest">Jumlah</label>
-                    <div class="flex items-center border rounded-lg overflow-hidden">
-                        <button type="button" onclick="modalDecreaseQty()" class="w-10 h-10 hover:bg-gray-100">-</button>
-                        <input type="number" id="modalQtyInput" value="1" readonly
-                            class="w-12 text-center border-0 outline-none">
-                        <button type="button" onclick="modalIncreaseQty()" class="w-10 h-10 hover:bg-gray-100">+</button>
-                    </div>
-                </div>
-
-                <button type="submit" id="addToCartBtn" disabled
-                    class="w-full bg-orange-600 text-white py-3 rounded-xl font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed">
-                    + Add To Cart
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const allProductVariants = {};
-
-        @foreach ($products ?? [] as $product)
-            allProductVariants[{{ $product->id }}] = @json($product->variants);
-        @endforeach
-
-        let currentVariants = [];
-        let selectedColor = null;
-        let selectedSize = null;
-        let selectedVariant = null;
-        let currentProductId = null;
-
-        function handleAddToCart(productId, productName) {
-            currentProductId = productId;
-            currentVariants = allProductVariants[productId] || [];
-
-            if (currentVariants.length === 0) {
-                directAddToCart(productId);
-                return;
-            }
-
-            openVariantModal(productName);
-        }
-
-        function openVariantModal(productName) {
-            document.getElementById('modalProductName').innerText = productName;
-            document.getElementById('variantForm').action = '/cart/' + currentProductId;
-
-            selectedColor = null;
-            selectedSize = null;
-            selectedVariant = null;
-
-            // Reset qty
-            document.getElementById('modalQtyInput').value = 1;
-            document.getElementById('variantQty').value = 1;
-
-            const uniqueColors = [...new Set(currentVariants.map(v => v.color))];
-            document.getElementById('colorOptions').innerHTML = uniqueColors.map(color =>
-                `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-color="${color}">${color}</button>`
-            ).join('');
-
-            const uniqueSizes = [...new Set(currentVariants.map(v => v.size))];
-            document.getElementById('sizeOptions').innerHTML = uniqueSizes.map(size =>
-                `<button type="button" class="variant-btn border px-3 py-1 rounded text-xs font-medium" data-size="${size}">${size}</button>`
-            ).join('');
-
-            document.getElementById('variantInfo').classList.add('hidden');
-            document.getElementById('addToCartBtn').disabled = true;
-            document.getElementById('variantModal').classList.remove('hidden');
-            document.getElementById('variantModal').classList.add('flex');
-
-            document.querySelectorAll('#colorOptions .variant-btn').forEach(btn => {
-                btn.onclick = function() {
-                    document.querySelectorAll('#colorOptions .variant-btn').forEach(b => b.classList.remove(
-                        'active', 'bg-black', 'text-white'));
-                    this.classList.add('active', 'bg-black', 'text-white');
-                    selectedColor = this.dataset.color;
-                    findModalVariant();
-                };
-            });
-
-            document.querySelectorAll('#sizeOptions .variant-btn').forEach(btn => {
-                btn.onclick = function() {
-                    document.querySelectorAll('#sizeOptions .variant-btn').forEach(b => b.classList.remove(
-                        'active', 'bg-black', 'text-white'));
-                    this.classList.add('active', 'bg-black', 'text-white');
-                    selectedSize = this.dataset.size;
-                    findModalVariant();
-                };
-            });
-        }
-
-        function directAddToCart(productId) {
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/cart/' + productId;
-            form.style.display = 'none';
-
-            var token = document.createElement('input');
-            token.type = 'hidden';
-            token.name = '_token';
-            token.value = '{{ csrf_token() }}';
-
-            form.appendChild(token);
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        function findModalVariant() {
-            if (!selectedColor || !selectedSize) {
-                selectedVariant = null;
-                document.getElementById('variantInfo').classList.add('hidden');
-                document.getElementById('addToCartBtn').disabled = true;
-                document.getElementById('selectedVariantId').value = '';
-                return;
-            }
-
-            selectedVariant = currentVariants.find(v => v.color === selectedColor && v.size === selectedSize);
-
-            if (selectedVariant && selectedVariant.stock > 0) {
-                const hasDiscount = selectedVariant.discount_price && selectedVariant.discount_price < selectedVariant
-                .price;
-                const price = hasDiscount ? selectedVariant.discount_price : selectedVariant.price;
-
-                document.getElementById('variantInfo').classList.remove('hidden');
-                document.getElementById('modalStock').innerText = selectedVariant.stock;
-                document.getElementById('modalPrice').innerText = 'Rp ' + Number(price).toLocaleString('id-ID');
-                document.getElementById('selectedVariantId').value = selectedVariant.id;
-                document.getElementById('modalQtyInput').max = selectedVariant.stock;
-
-                // RESET QTY ke 1 saat variant berubah
-                document.getElementById('modalQtyInput').value = 1;
-                document.getElementById('variantQty').value = 1;
-
-                document.getElementById('addToCartBtn').disabled = false;
-            } else {
-                document.getElementById('variantInfo').classList.add('hidden');
-                document.getElementById('addToCartBtn').disabled = true;
-            }
-        }
-
-        function closeVariantModal() {
-            document.getElementById('variantModal').classList.add('hidden');
-            document.getElementById('variantModal').classList.remove('flex');
-        }
-
-        function modalIncreaseQty() {
-            const input = document.getElementById('modalQtyInput');
-            const max = parseInt(input.max) || 1;
-            if (parseInt(input.value) < max) {
-                input.value = parseInt(input.value) + 1;
-                document.getElementById('variantQty').value = input.value; // UPDATE HIDDEN
-            }
-        }
-
-        function modalDecreaseQty() {
-            const input = document.getElementById('modalQtyInput');
-            if (parseInt(input.value) > 1) {
-                input.value = parseInt(input.value) - 1;
-                document.getElementById('variantQty').value = input.value; // UPDATE HIDDEN
-            }
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeVariantModal();
-        });
-    </script>
 @endsection

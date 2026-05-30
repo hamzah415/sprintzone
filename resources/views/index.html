@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SprintZone - Home</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Remix Icon -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Poppins', sans-serif;
+    }
+
+    body{
+      background:#f5f5f5;
+      color:#111;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    .container{
+      width:90%;
+      max-width:1400px;
+      margin:auto;
+    }
+
+    /* TOP BAR */
+    .topbar{
+      background:#000;
+      color:#fff;
+      padding:10px 0;
+      font-size:14px;
+    }
+
+    .topbar-content{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    /* NAVBAR */
+    .navbar{
+      background:#fff;
+      padding:20px 0;
+      position:sticky;
+      top:0;
+      z-index:100;
+      box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-content{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+    }
+
+    .logo{
+      font-size:32px;
+      font-weight:700;
+      font-style:italic;
+    }
+
+    .menu{
+      display:flex;
+      gap:25px;
+      font-weight:500;
+    }
+
+    .menu a:hover{
+      color:#555;
+    }
+
+    .search-box{
+      flex:1;
+      max-width:350px;
+      position:relative;
+    }
+
+    .search-box input{
+      width:100%;
+      padding:12px 15px;
+      border:none;
+      border-radius:50px;
+      background:#f0f0f0;
+      outline:none;
+    }
+
+    .nav-icons{
+      display:flex;
+      gap:15px;
+      font-size:22px;
+    }
+
+    /* HERO */
+    .hero{
+      margin-top:30px;
+      background:linear-gradient(to right,#000,#1a1a1a);
+      border-radius:25px;
+      padding:60px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color:#fff;
+      overflow:hidden;
+    }
+
+    .hero-text{
+      max-width:500px;
+    }
+
+    .hero-text span{
+      background:#222;
+      padding:8px 15px;
+      border-radius:30px;
+      font-size:14px;
+    }
+
+    .hero-text h1{
+      font-size:70px;
+      line-height:1.1;
+      margin:20px 0;
+    }
+
+    .hero-text p{
+      color:#ccc;
+      margin-bottom:30px;
+    }
+
+    .btn{
+      display:inline-block;
+      background:#fff;
+      color:#000;
+      padding:14px 30px;
+      border-radius:50px;
+      font-weight:600;
+      transition:0.3s;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+    }
+
+    .hero img{
+      width:500px;
+      object-fit:contain;
+    }
+
+    /* BRANDS */
+    .brands{
+      margin:40px 0;
+      background:#fff;
+      padding:25px;
+      border-radius:20px;
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:20px;
+    }
+
+    .brands img{
+      width:100px;
+      opacity:0.7;
+      transition:0.3s;
+    }
+
+    .brands img:hover{
+      opacity:1;
+      transform:scale(1.05);
+    }
+
+    /* SECTION */
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:50px 0 25px;
+    }
+
+    .section-title h2{
+      font-size:32px;
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:25px;
+    }
+
+    .card{
+      background:#fff;
+      border-radius:20px;
+      padding:20px;
+      transition:0.3s;
+      position:relative;
+    }
+
+    .card:hover{
+      transform:translateY(-8px);
+      box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .wishlist{
+      position:absolute;
+      top:20px;
+      right:20px;
+      font-size:22px;
+      cursor:pointer;
+    }
+
+    .card img{
+      width:100%;
+      height:180px;
+      object-fit:contain;
+      margin-bottom:15px;
+    }
+
+    .brand{
+      color:#777;
+      font-size:14px;
+    }
+
+    .title{
+      font-size:18px;
+      font-weight:600;
+      margin:5px 0;
+    }
+
+    .price{
+      font-size:22px;
+      font-weight:700;
+      margin-top:10px;
+    }
+
+    .rating{
+      margin-top:10px;
+      color:orange;
+      font-size:14px;
+    }
+
+    /* PROMO */
+    .promo{
+      margin:60px 0;
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:25px;
+    }
+
+    .promo-left{
+      background:#000;
+      color:#fff;
+      border-radius:25px;
+      padding:40px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .promo-left h1{
+      font-size:70px;
+    }
+
+    .promo-left img{
+      position:absolute;
+      right:20px;
+      bottom:10px;
+      width:350px;
+    }
+
+    .promo-right{
+      display:flex;
+      flex-direction:column;
+      gap:25px;
+    }
+
+    .promo-box{
+      background:#fff;
+      border-radius:25px;
+      padding:30px;
+      flex:1;
+    }
+
+    /* FOOTER */
+    footer{
+      margin-top:80px;
+      background:#111;
+      color:#fff;
+      padding:60px 0 30px;
+    }
+
+    .footer-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:40px;
+    }
+
+    .footer-grid h3{
+      margin-bottom:20px;
+    }
+
+    .footer-grid p,
+    .footer-grid a{
+      color:#bbb;
+      margin-bottom:10px;
+      display:block;
+      font-size:14px;
+    }
+
+    .copyright{
+      text-align:center;
+      margin-top:40px;
+      color:#888;
+      font-size:14px;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:992px){
+
+      .menu{
+        display:none;
+      }
+
+      .hero{
+        flex-direction:column;
+        text-align:center;
+      }
+
+      .hero img{
+        width:100%;
+        margin-top:30px;
+      }
+
+      .hero-text h1{
+        font-size:50px;
+      }
+
+      .promo{
+        grid-template-columns:1fr;
+      }
+
+      .promo-left img{
+        position:relative;
+        width:100%;
+        right:0;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="container topbar-content">
+      <p>Gratis Ongkir untuk semua pesanan</p>
+      <p>Diskon hingga 50% pembelian pertama</p>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container nav-content">
+
+      <div class="logo">SPRINTZONE</div>
+
+      <div class="menu">
+        <a href="#">Home</a>
+        <a href="#">Pria</a>
+        <a href="#">Wanita</a>
+        <a href="#">Anak</a>
+        <a href="#">Brand</a>
+        <a href="#">Promo</a>
+      </div>
+
+      <div class="search-box">
+        <input type="text" placeholder="Cari sepatu favoritmu...">
+      </div>
+
+      <div class="nav-icons">
+        <i class="ri-user-line"></i>
+        <i class="ri-heart-line"></i>
+        <i class="ri-shopping-cart-2-line"></i>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="container hero">
+
+    <div class="hero-text">
+      <span>NEW ARRIVAL</span>
+      <h1>FAST STEPS BIG IMPACT</h1>
+      <p>
+        Temukan koleksi sepatu terbaik dari brand terkenal
+        dengan desain modern dan nyaman digunakan.
+      </p>
+
+      <a href="#" class="btn">Belanja Sekarang</a>
+    </div>
+
+    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" alt="shoe">
+
+  </section>
+
+  <!-- BRANDS -->
+  <section class="container brands">
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg">
+    <img src="https://upload.wikimedia.org/wikipedia/en/f/fd/Puma_AG.svg">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ea/New_Balance_logo.svg">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Asics_Logo.svg">
+
+  </section>
+
+  <!-- BEST SELLER -->
+  <section class="container">
+
+    <div class="section-title">
+      <h2>Best Seller</h2>
+      <a href="#">Lihat Semua</a>
+    </div>
+
+    <div class="products">
+
+      <div class="card">
+        <div class="wishlist">
+          <i class="ri-heart-line"></i>
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop">
+
+        <p class="brand">Nike</p>
+        <h3 class="title">Nike Air Zoom</h3>
+        <p class="price">Rp 1.699.000</p>
+
+        <div class="rating">
+          ★★★★★ (120)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="wishlist">
+          <i class="ri-heart-line"></i>
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1200&auto=format&fit=crop">
+
+        <p class="brand">Adidas</p>
+        <h3 class="title">Ultraboost 22</h3>
+        <p class="price">Rp 2.299.000</p>
+
+        <div class="rating">
+          ★★★★★ (98)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="wishlist">
+          <i class="ri-heart-line"></i>
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1200&auto=format&fit=crop">
+
+        <p class="brand">Puma</p>
+        <h3 class="title">Puma RS-X</h3>
+        <p class="price">Rp 1.799.000</p>
+
+        <div class="rating">
+          ★★★★★ (75)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="wishlist">
+          <i class="ri-heart-line"></i>
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=1200&auto=format&fit=crop">
+
+        <p class="brand">New Balance</p>
+        <h3 class="title">NB 530</h3>
+        <p class="price">Rp 1.599.000</p>
+
+        <div class="rating">
+          ★★★★★ (110)
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- PROMO -->
+  <section class="container promo">
+
+    <div class="promo-left">
+      <p>DISKON HINGGA</p>
+      <h1>50%</h1>
+      <p>Untuk semua produk pilihan</p>
+
+      <br>
+
+      <a href="#" class="btn">Beli Sekarang</a>
+
+      <img src="https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=1200&auto=format&fit=crop">
+    </div>
+
+    <div class="promo-right">
+
+      <div class="promo-box">
+        <h2>SPRING / SUMMER 2026</h2>
+        <p>Koleksi terbaru dengan gaya modern.</p>
+      </div>
+
+      <div class="promo-box">
+        <h2>EXTRA 10% OFF</h2>
+        <p>Gunakan kode : SPRINT10</p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+
+    <div class="container">
+
+      <div class="footer-grid">
+
+        <div>
+          <h3>SPRINTZONE</h3>
+          <p>
+            Website e-commerce sepatu terbaik
+            dengan berbagai pilihan brand ternama.
+          </p>
+        </div>
+
+        <div>
+          <h3>Menu</h3>
+          <a href="#">Home</a>
+          <a href="#">Pria</a>
+          <a href="#">Wanita</a>
+          <a href="#">Promo</a>
+        </div>
+
+        <div>
+          <h3>Bantuan</h3>
+          <a href="#">FAQ</a>
+          <a href="#">Pengiriman</a>
+          <a href="#">Retur</a>
+          <a href="#">Kontak</a>
+        </div>
+
+        <div>
+          <h3>Follow Us</h3>
+          <a href="#">Instagram</a>
+          <a href="#">TikTok</a>
+          <a href="#">Facebook</a>
+        </div>
+
+      </div>
+
+      <div class="copyright">
+        © 2026 SprintZone. All Rights Reserved.
+      </div>
+
+    </div>
+
+  </footer>
+
+</body>
+</html>

@@ -24,6 +24,8 @@ use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\StockReportController;
 use App\Http\Controllers\UserReportController;
+use App\Models\Brand;
+use App\Models\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +34,27 @@ use App\Http\Controllers\UserReportController;
 // =========================================================== // 1. HALAMAN PUBLIK (Guest - Tanpa Login) // ===========================================================
 
 Route::get('/', function () {
-    $products = Product::with('brand')->where('status', 'active')->latest()->get();
-    return view('welcome', compact('products'));
+
+    $products = Product::with(['brand', 'variants'])
+        ->where('status', 'active')
+        ->latest()
+        ->get();
+
+    $brands = Brand::with('images')
+        ->orderBy('name')
+        ->take(5)
+        ->get();
+
+    $categories = Category::latest()
+        ->take(6)
+        ->get();
+
+    return view('welcome', compact(
+        'products',
+        'brands',
+        'categories'
+    ));
+
 })->name('welcome');
 
 Route::get('/login', function () {
