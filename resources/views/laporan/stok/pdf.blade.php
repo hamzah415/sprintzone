@@ -139,17 +139,27 @@
     <!-- HEADER -->
     <div class="header-container">
         <div>
-            <div class="brand-title">SPRINTZONE</div>
-            <div class="brand-address">
+            <!-- BRAND -->
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <!-- KIRI -->
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <img src="{{ public_path('img/logo.png') }}" class="logo-img" alt="Logo"
+                        style="width:60px; height:auto;">
+                    <div class="brand-title">
+                        SPRINTZONE
+                    </div>
+                </div>
+                <!-- KANAN -->
+                <div class="website">
+                    SprintZone.online
+                </div>
+            </div>
+            <!-- ADDRESS -->
+            <div class="brand-address" style="margin-top:12px;">
                 Jl. Inspeksi Kalimalang No.9, Cibatu, Cikarang Sel.,<br>
                 Kabupaten Bekasi, Jawa Barat 17530<br>
                 Telp: 0882-1353-4744
             </div>
-        </div>
-        
-        <div class="text-right">
-            <img src="{{ public_path('img/logo.png') }}" class="logo-img" alt="Logo">
-            <div class="website">SprintZone.online</div>
         </div>
     </div>
 
@@ -166,7 +176,7 @@
         <span><strong>Total Stok:</strong> {{ number_format($totalStock) }}</span>
         <span class="divider">|</span>
         <span><strong>Low Stock:</strong>
-            {{ $variants->filter(fn($v) => $v->stock > 0 && $v->stock < 5)->count() }}</span>
+            {{ $variants->filter(fn($v) => $v->stock > 0 && $v->stock < 10)->count() }}</span>
         <span class="divider">|</span>
         <span><strong>Habis:</strong> {{ $variants->filter(fn($v) => $v->stock == 0)->count() }}</span>
     </div>
@@ -204,7 +214,7 @@
                     <td class="text-center">
                         @if ($v->stock == 0)
                             <span class="status-habis">HABIS</span>
-                        @elseif($v->stock < 5)
+                        @elseif($v->stock < 10)
                             <span class="status-low">LOW</span>
                         @else
                             <span class="status-ready">READY</span>

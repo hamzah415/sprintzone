@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Laporan Harian - SprintZone</title>
@@ -9,13 +10,13 @@
             margin: 20mm 15mm 15mm 15mm;
         }
 
-        body{
+        body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 11px;
             color: #000;
         }
 
-        .page{
+        .page {
             width: 100%;
         }
 
@@ -124,8 +125,13 @@
             vertical-align: top;
         }
 
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
 
         /* FOOTER */
         .footer {
@@ -137,111 +143,123 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="page">
+    <div class="page">
 
-    <!-- HEADER -->
-    <div class="header-container">
-        <div>
-            <div class="brand-title">SPRINTZONE</div>
-            <div class="brand-address">
-                Jl. Inspeksi Kalimalang No.9, Cibatu, Cikarang Sel.,<br>
-                Kabupaten Bekasi, Jawa Barat 17530<br>
-                Telp: 0882-1353-4744
-            </div>
-        </div>
-        
-        <div class="text-right">
-            <img src="{{ public_path('img/logo.png') }}" class="logo-img" alt="Logo">
-            <div class="website">SprintZone.online</div>
-        </div>
-    </div>
-
-    <!-- TITLE -->
-    <div class="title-section">
-        <h1 class="report-title">Laporan Penjualan</h1>
-        <p class="report-date">{{ $tanggal }}</p>
-    </div>
-
-    <!-- TOTAL PENDAPATAN -->
-    <div class="summary-wrapper">
-        <div class="income-box">
-            <div class="income-header">Total Pendapatan</div>
-            <div class="income-content">
-                Rp {{ number_format($totalRevenue, 0, ',', '.') }}
-            </div>
-        </div>
-    </div>
-
-    <!-- TABLE -->
-    <table>
-        <thead>
-            <tr>
-                <th width="5%" class="text-center">No</th>
-                <th width="12%">Tanggal</th>
-                <th width="8%">ID</th>
-                <th width="18%">Customer</th>
-                <th width="30%">Produk</th>
-                <th width="5%" class="text-center">Qty</th>
-                <th width="10%">Status</th>
-                <th width="12%" class="text-right">Total</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @forelse($orders as $index => $order)
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $order->created_at->format('d/m/Y') }}</td>
-                <td>#{{ $order->id }}</td>
-                <td>{{ $order->customer_name ?? 'Guest' }}</td>
-                
-                <!-- Produk Items -->
-                <td>
-                    @forelse($order->items as $item)
-                        <div style="margin-bottom: 2px;">
-                            {{ $item->variant->product->name ?? '-' }}
-                            @if($item->variant?->size)
-                                ({{ $item->variant->size }})
-                            @endif
+        <!-- HEADER -->
+        <div class="header-container">
+            <div>
+                <!-- BRAND -->
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <!-- KIRI -->
+                    <div style="display:flex; align-items:center; gap:14px;">
+                        <img src="{{ public_path('img/logo.png') }}" class="logo-img" alt="Logo"
+                            style="width:60px; height:auto;">
+                        <div class="brand-title">
+                            SPRINTZONE
                         </div>
-                    @empty
-                        -
-                    @endforelse
-                </td>
+                    </div>
+                    <!-- KANAN -->
+                    <div class="website">
+                        SprintZone.online
+                    </div>
+                </div>
+                <!-- ADDRESS -->
+                <div class="brand-address" style="margin-top:12px;">
+                    Jl. Inspeksi Kalimalang No.9, Cibatu, Cikarang Sel.,<br>
+                    Kabupaten Bekasi, Jawa Barat 17530<br>
+                    Telp: 0882-1353-4744
+                </div>
+            </div>
+        </div>
 
-                <!-- Qty Items -->
-                <td class="text-center">
-                    @forelse($order->items as $item)
-                        {{ $item->qty }}<br>
-                    @empty
-                        -
-                    @endforelse
-                </td>
+        <!-- TITLE -->
+        <div class="title-section">
+            <h1 class="report-title">Laporan Penjualan</h1>
+            <p class="report-date">{{ $tanggal }}</p>
+        </div>
 
-                <!-- Status -->
-                <td>{{ ucfirst($order->status) }}</td>
+        <!-- TOTAL PENDAPATAN -->
+        <div class="summary-wrapper">
+            <div class="income-box">
+                <div class="income-header">Total Pendapatan</div>
+                <div class="income-content">
+                    Rp {{ number_format($totalRevenue, 0, ',', '.') }}
+                </div>
+            </div>
+        </div>
 
-                <!-- Total Price -->
-                <td class="text-right">
-                    Rp {{ number_format($order->total_price, 0, ',', '.') }}
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="text-center">Tidak ada data transaksi</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+        <!-- TABLE -->
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%" class="text-center">No</th>
+                    <th width="12%">Tanggal</th>
+                    <th width="8%">ID</th>
+                    <th width="18%">Customer</th>
+                    <th width="30%">Produk</th>
+                    <th width="5%" class="text-center">Qty</th>
+                    <th width="10%">Status</th>
+                    <th width="12%" class="text-right">Total</th>
+                </tr>
+            </thead>
 
-    <!-- FOOTER -->
-    <div class="footer">
-        Dicetak: {{ now()->format('d/m/Y H:i:s') }} | Sistem Management SprintZone
+            <tbody>
+                @forelse($orders as $index => $order)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
+                        <td>#{{ $order->id }}</td>
+                        <td>{{ $order->customer_name ?? 'Guest' }}</td>
+
+                        <!-- Produk Items -->
+                        <td>
+                            @forelse($order->items as $item)
+                                <div style="margin-bottom: 2px;">
+                                    {{ $item->variant->product->name ?? '-' }}
+                                    @if ($item->variant?->size)
+                                        ({{ $item->variant->size }})
+                                    @endif
+                                </div>
+                            @empty
+                                -
+                            @endforelse
+                        </td>
+
+                        <!-- Qty Items -->
+                        <td class="text-center">
+                            @forelse($order->items as $item)
+                                {{ $item->qty }}<br>
+                            @empty
+                                -
+                            @endforelse
+                        </td>
+
+                        <!-- Status -->
+                        <td>{{ ucfirst($order->status) }}</td>
+
+                        <!-- Total Price -->
+                        <td class="text-right">
+                            Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center">Tidak ada data transaksi</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Dicetak: {{ now()->format('d/m/Y H:i:s') }} | Sistem Management SprintZone
+        </div>
+
     </div>
-
-</div>
 
 </body>
+
 </html>
