@@ -270,10 +270,10 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
         Route::get('/laporan/stok/export', [StockReportController::class, 'export'])->name('laporan.stok.export');
 
         Route::get('/laporan/user', [UserReportController::class, 'index'])->name('laporan.user');
-        Route::get('/laporan/user/export', [UserReportController::class, 'export'])->name('laporan.user.export');
+        Route::get('/laporan/user/export-pdf', [UserReportController::class, 'exportPDF'])->name('laporan.user.export-pdf');
 
         Route::get('/laporan/brand-kategori', [BrandCategoryReportController::class, 'index'])->name('laporan.brand-kategori');
-        Route::get('/laporan/brand-kategori/export', [BrandCategoryReportController::class, 'export'])->name('laporan.brand-kategori.export');
+        Route::get('/laporan/brand-kategori/export-pdf', [BrandCategoryReportController::class, 'exportPDF'])->name('laporan.brand-kategori.export-pdf');
     });
 
     // Transaction (Admin bisa melihat history juga)

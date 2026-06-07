@@ -10,9 +10,9 @@
                 </h2>
                 <p class="text-sm text-gray-400 mt-1">Penjualan per brand dan kategori</p>
             </div>
-            <a href="{{ route('laporan.brand-kategori.export') }}"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg text-xs font-black uppercase hover:bg-green-700 transition">
-                <i class="fas fa-download mr-1"></i> EXPORT CSV
+            <a href="{{ route('laporan.brand-kategori.export-pdf') }}"
+                class="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-black uppercase">
+                <i class="fas fa-file-pdf mr-1"></i> EXPORT PDF
             </a>
         </div>
 
