@@ -264,6 +264,10 @@
                         </div>
                     </div>
 
+                    <a href="{{ route('manual') }}" class="hover:text-orange-500 transition decoration-none">
+                        MANUAL BOOK
+                    </a>
+
                 </div>
             </div>
         </nav>

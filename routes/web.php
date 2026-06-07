@@ -18,6 +18,7 @@ use App\Models\Product;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryReportController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ManualController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductVariantController;
@@ -274,6 +275,7 @@ Route::middleware(['auth', '2fa', 'isAdmin'])->group(function () {
 
         Route::get('/laporan/brand-kategori', [BrandCategoryReportController::class, 'index'])->name('laporan.brand-kategori');
         Route::get('/laporan/brand-kategori/export-pdf', [BrandCategoryReportController::class, 'exportPDF'])->name('laporan.brand-kategori.export-pdf');
+
     });
 
     // Transaction (Admin bisa melihat history juga)
@@ -299,3 +301,9 @@ Route::get('/test-variant', function () {
         'count' => count($sizesArray)
     ]);
 });
+
+// Tampilkan halaman preview
+Route::get('/manual', [ManualController::class, 'index'])->name('manual');
+
+// Download PDF
+Route::get('/manual/download', [ManualController::class, 'download'])->name('manual.download');
