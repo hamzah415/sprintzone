@@ -52,6 +52,9 @@ class SalesReportController extends Controller
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
 
+        // Buat label untuk filter
+        $filter = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+
         $orders = Order::with(['user', 'items.variant.product', 'items.variant'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
@@ -114,7 +117,7 @@ class SalesReportController extends Controller
             'filter' => $filter,
             'tanggal' => $labelPeriode
         ])
-        ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'landscape');
 
         return $pdf->download('laporan-penjualan-' . now()->format('Y-m-d') . '.pdf');
     }
